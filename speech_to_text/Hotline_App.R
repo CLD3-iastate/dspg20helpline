@@ -10,13 +10,15 @@ for (pkgs in packages){
   }
 }
 
-completex <- completex_text
+completex <- completex_text #from data manipulation .rmd
 
-transcripts <- rough_data_trans
+transcripts <- rough_data_trans # original rough_data_trans
+
+transcripts$Call_Number <- as.factor(transcripts$Call_Number) #change to factor 
 
 
 
-ui <- fluidPage(theme = shinytheme("lumen"),
+ui <- fluidPage(theme = shinytheme("lumen"), 
                  titlePanel("DSPG Hotline"),
                  sidebarLayout(
                    sidebarPanel(
