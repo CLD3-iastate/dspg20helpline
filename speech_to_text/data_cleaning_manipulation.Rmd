@@ -81,7 +81,14 @@ TidyspeechText5$Call_Number <- df$Call_Number[5]
 ```
 
 ```{r}
+#TidyspeechText
+#TidyspeechText2 
+#TidyspeechText3 
+#TidyspeechText4 
+#TidyspeechText5
 
+# Run the above 5 times to create the above dfs. 
+#This is fine for now but changes will be coming to allow for a single run. 
 
 
 complete <- rbind(TidyspeechText, TidyspeechText2, TidyspeechText3, TidyspeechText4, TidyspeechText5)
