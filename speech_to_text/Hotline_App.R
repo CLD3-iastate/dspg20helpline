@@ -33,8 +33,8 @@ ui <- fluidPage(theme = shinytheme("lumen"),
                    ),
                    
                    mainPanel(
-                     plotOutput(outputId = "lineplot"),
-                     textOutput("calllog"), style = "height:900px; overflow-y: scroll;"
+                     plotOutput(outputId = "lineplot", width = "100%"),
+                     textOutput("calllog"), style = "height:500px; overflow-y: scroll;"
                    )
                  ))
 
