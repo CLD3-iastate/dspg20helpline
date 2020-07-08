@@ -42,14 +42,19 @@ Outcome_Data_Long$Outcome <- as.factor(Outcome_Data_Long$Outcome) #change to fac
 
 #--------------------------------------------------------------------------------------------------------------#
 
+completex$ave_sentiment_dup <- completex$ave_sentiment
+
+
+#
+
 #Sidebar menu and icons
 
 sidebar <- dashboardSidebar(
   
   sidebarMenu(
-    menuItem("Sentiment Analysis", icon = icon("dashboard"), tabName = 'sentiment'),
-    menuItem("Call Topic", icon = icon("th"), tabName = "calltopic"),
-    menuItem("Outcome", icon = icon("th"), tabName = "outcome")
+    menuItem("Sentiment Analysis", icon = icon("diagnoses"), tabName = 'sentiment'),
+    menuItem("Call Topic", icon = icon("bar-chart-o"), tabName = "calltopic"),
+    menuItem("Outcome", icon = icon("bar-chart-o"), tabName = "outcome")
   )
   
 )
@@ -73,13 +78,60 @@ body <- dashboardBody(
                 collapsible = TRUE,
                 enable_sidebar = TRUE,
                 sidebar_width = 8,
-                sidebar_start_open = TRUE,
+                sidebar_start_open = FALSE,
                 sidebar_content = tagList(
                   selectInput(inputId = "call_number", label = strong("Select Call"),
                               choices = unique(completex$Call_Number),
                               selected = "6183")
                 ),
-                plotlyOutput(outputId = "lineplot")
+                plotlyOutput(outputId = "lineplot"), style = "height:400px"
+              )
+            ),
+            
+            fluidRow(
+              
+              boxPlus(
+                width = 7,
+                title = "Sentiment Analysis Score Hex", 
+                closable = TRUE, 
+                status = "primary", 
+                solidHeader = TRUE, 
+                collapsible = TRUE,
+                enable_sidebar = TRUE,
+                sidebar_width = 8,
+                sidebar_start_open = FALSE,
+                sidebar_content = tagList(
+                  selectInput(inputId = "call_number3", label = strong("Select Call"),
+                              choices = unique(completex$Call_Number),
+                              selected = "6183")
+                ),
+                plotOutput(outputId = "hexplot"), style = "height:400px"
+              )
+            ),
+            
+            fluidRow( #Two Graph Developement
+              
+              boxPlus(
+                width = 7,
+                title = "Sentiment Analysis Score Histograms", 
+                closable = TRUE, 
+                status = "primary", 
+                solidHeader = TRUE, 
+                collapsible = TRUE,
+                enable_sidebar = TRUE,
+                sidebar_width = 10,
+                sidebar_start_open = FALSE,
+                sidebar_content = tagList(
+                  selectInput(inputId = "call_number4", label = strong("Select Call"),
+                              choices = unique(completex$Call_Number),
+                              selected = "6183"),
+                  
+                  selectInput(inputId = "value", label = strong("Select Graph Type"),
+                              choices = c("Facet", "Overlayed"),
+                              selected = NULL, multiple = FALSE, selectize = TRUE)
+                  
+                ),
+                plotlyOutput(outputId = "twoplot"), style = "height:400px"
               )
             ),
             
@@ -192,6 +244,16 @@ server <- function(input, output){
   })
   
   
+  filtered_data5 <- reactive({
+    filter(completex, Call_Number == input$call_number3) #Reactive Will need to move up for organization
+  })
+  
+  
+  filtered_data6 <- reactive({
+    filter(completex, Call_Number == input$call_number4) #Reactive Will need to move up for organization
+  })
+  
+  
   output$lineplot <- renderPlotly({
     
     ggplotly(ggplot(filtered_data(), 
@@ -200,6 +262,40 @@ server <- function(input, output){
     
     
   })
+  
+  output$hexplot <- renderPlot({
+    
+    ggplot(filtered_data5()) +
+              geom_hex(aes(y= ave_sentiment, x=call_record,
+                           fill=currently_speaking), bins = 50)+
+              facet_wrap(~currently_speaking,ncol=2)+ theme_bw()+ scale_fill_manual(values=c("darkorange2", "dodgerblue3"))
+  })
+  
+  
+  #---------------------------------------------------------------------------------------#
+  
+  #Two Plot 
+  
+  output$twoplot <- renderPlotly({
+    if (input$value == "Facet"){
+      filtered_data6() %>%
+        ggplot() +
+          geom_histogram(aes(x=ave_sentiment, fill=currently_speaking))+
+            facet_wrap(~currently_speaking,ncol=2)+ theme_bw()+ scale_fill_manual(values=c("darkorange2", "dodgerblue3"))
+    }
+    else {
+      filtered_data6() %>%
+        ggplot() +
+          geom_histogram(aes(x= ave_sentiment_dup,fill=currently_speaking), 
+                       colour="grey50", alpha=0.5, position="identity")+ theme_bw()+ scale_fill_manual(values=c("darkorange2", "dodgerblue3"))
+    }
+    
+  })
+  
+  
+
+  #---------------------------------------------------------------------------------------#
+  
   
   output$calllog <- renderText({filtered_data2() %>%
       select(Call_Transcript) %>% 
