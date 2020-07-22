@@ -476,28 +476,23 @@ body <- dashboardBody(
                 ),
                 plotOutput(outputId = "bubblex_plot")
               )
-            )#,
+            ),
             
-           # fluidRow(
-              #
-               # boxPlus(
-                 # width = 7,
-                 # title = "Area Map", 
-                 # closable = TRUE, 
-                 # status = "primary", 
-                 # solidHeader = TRUE, 
-                 # collapsible = FALSE,
-                 # enable_sidebar = FALSE,
-                 # sidebar_width = 10,
-                 # sidebar_start_open = FALSE,
-                  #sidebar_content = tagList(
-                  #  selectInput(inputId = "yearx2", label = strong("Year"),
-                  #              choices = unique(d$year),
-                  #              selected = "2020")
-                 # ),
+            fluidRow(
               
-              #rglwidgetOutput("MAPPlot")
-            #)
+                boxPlus(
+                  width = 7,
+                  title = "Area Map", 
+                  closable = TRUE, 
+                  status = "primary", 
+                  solidHeader = TRUE, 
+                  collapsible = FALSE,
+                  enable_sidebar = FALSE,
+                  sidebar_width = 10,
+                  sidebar_start_open = FALSE),
+              
+              rglwidgetOutput("MAPPlot")
+            )
             
     )
     
@@ -693,16 +688,21 @@ server <- function(input, output){
       theme(legend.position = "none")
   })
   
-  #output$MAPPlot <-  renderRglwidget({
+  output$MAPPlot <-  renderRglwidget({
+    #try(rgl.close())
     
     
-    #gg2 <- ggplot() +
-      #geom_sf(data = iowa, aes(fill = n))+
-      #geom_sf(data = iowa2, aes(fill = n))+
-      #scale_fill_viridis_c(option = "plasma")
+    gg2 <- ggplot() +
+      geom_sf(data = iowa, aes(fill = n))+
+      geom_sf(data = iowa2, aes(fill = n))+
+      scale_fill_viridis_c(option = "plasma")
     
     
-   # plot_gg(gg2, width = 5, height = 3, scale = 300, multicore = TRUE, windowsize = c(1000, 800))
+    plot_gg(gg2, width = 5, height = 3, scale = 300, multicore = TRUE, windowsize = c(1000, 800))
+    
+    Sys.sleep(0.2)
+    render_snapshot(clear = TRUE)
+    #rglwidget()
     
   })
 }
