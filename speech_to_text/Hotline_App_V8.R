@@ -1,5 +1,7 @@
 #Load required Packages
 
+options(rgl.useNULL = TRUE)
+
 packages <- c("dplyr", "purrr", "stringr", "readxl",
               "magrittr", "stringr", "ggplot2", "shiny", "sentimentr",
               "shinythemes", "shinydashboard", "shinydashboardPlus", "plotly")
@@ -479,18 +481,6 @@ body <- dashboardBody(
             ),
             
             fluidRow(
-              
-                boxPlus(
-                  width = 7,
-                  title = "Area Map", 
-                  closable = TRUE, 
-                  status = "primary", 
-                  solidHeader = TRUE, 
-                  collapsible = FALSE,
-                  enable_sidebar = FALSE,
-                  sidebar_width = 10,
-                  sidebar_start_open = FALSE),
-              
               rglwidgetOutput("MAPPlot")
             )
             
@@ -689,20 +679,14 @@ server <- function(input, output){
   })
   
   output$MAPPlot <-  renderRglwidget({
-    #try(rgl.close())
-    
-    
+
     gg2 <- ggplot() +
       geom_sf(data = iowa, aes(fill = n))+
       geom_sf(data = iowa2, aes(fill = n))+
       scale_fill_viridis_c(option = "plasma")
     
-    
-    plot_gg(gg2, width = 5, height = 3, scale = 300, multicore = TRUE, windowsize = c(1000, 800))
-    
-    Sys.sleep(0.2)
-    render_snapshot(clear = TRUE)
-    #rglwidget()
+    plot_gg(gg2, width = 5, height = 3, scale = 300, multicore = TRUE, windowsize = c(500, 300))
+    rglwidget()
     
   })
 }
