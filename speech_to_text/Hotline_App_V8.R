@@ -182,6 +182,7 @@ iowa2 <- iowa %>% filter(NPA == '563')
 sidebar <- dashboardSidebar(
   
   sidebarMenu(
+    menuItem("Project Description", icon = icon("diagnoses"), tabName = "description"),
     menuItem("Sentiment Analysis", icon = icon("diagnoses"), tabName = 'sentiment'),
     menuItem("Call information Panel", icon = icon("bar-chart-o"), tabName = "bar"),
     menuItem("Call Numbers Panel", icon = icon("bar-chart-o"), tabName = "bubble")
@@ -194,6 +195,38 @@ sidebar <- dashboardSidebar(
 
 body <- dashboardBody(
   tabItems(
+      tabItem(tabName = "description",
+              fluidRow(
+                boxPlus(
+                  title = "Project Overview",
+                  closable = FALSE,
+                  width = NULL,
+                  status = "warning",
+                  solidHeader = TRUE,
+                  collapsible = TRUE,
+                  h1("2020 DSPG Hotline"),
+                  
+                  h2("Project Description"),
+                  p("Create an analytic strategy that maximizes the actionable insights yielded from the hotline data."),
+                  
+                  h2("Project Goals"),
+                  p("Project goals include developing a system for extension that provides:
+                    a) timely analysis of call logs, chats, and emails associated with the helplines;
+                    b) insights about the needs of Iowan's by time, place, and topic;
+                    c) additional infrastructure to support Extension Specialists that work with the helplines."),
+                  
+                  h2("Our Approach"),
+                  p("- Review current hotline data architecture
+                     - Collect current hotline data as well as other data sources
+                     - Develope Shiny Dashboard application"),
+                  
+                  h2("Ethical Considerations"),
+                  p("We took the utmost caution when it came to the privacy of our clients data.")
+                )
+              )
+            
+      ),
+    
     tabItem(tabName = 'sentiment',
             fluidRow(
               
