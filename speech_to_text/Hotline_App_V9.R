@@ -127,6 +127,15 @@ d <-b %>%
   summarise(sumTotalTime = sum(Total_Time))
 
 
+
+
+head(calldetails)
+calldetails$start_date <- as.character(calldetails$start_date)
+calldetails$num_of_calls <- as.numeric(ave(calldetails$start_date, calldetails$start_date, FUN = length))
+
+
+
+
 #--------------------------------------------------------------------------------------------------------------#
 library(sf)
 
@@ -195,28 +204,37 @@ sidebar <- dashboardSidebar(
 
 body <- dashboardBody(
   tabItems(
-    
-      tabItem(tabName = "description",
-              fluidRow(
-                boxPlus(
-                  title = "Project Overview",
-                  closable = FALSE,
-                  width = NULL,
-                  status = "warning",
-                  solidHeader = TRUE,
-                  collapsible = TRUE,
-                  h1("2020 DSPG Project Name"),
-                  h2("Project Description"),
-                  p("Example text: Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam in varius purus. Nullam ut sodales ante. Fusee justo nisi, suscipit a lacus et, posuere sagittis ex."),
-                  h2("Project Goals"),
-                  p("Example text: Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam in varius purus. Nullam ut sodales ante. Fusee justo nisi, suscipit a lacus et, posuere sagittis ex."),
-                  h2("Our Approach"),
-                  p("Example text: Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam in varius purus. Nullam ut sodales ante. Fusee justo nisi, suscipit a lacus et, posuere sagittis ex."),
-                  h2("Ethical Considerations"),
-                  p("Example text: Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam in varius purus. Nullam ut sodales ante. Fusee justo nisi, suscipit a lacus et, posuere sagittis ex.")
-                )
+    tabItem(tabName = "description",
+            fluidRow(
+              boxPlus(
+                title = "Project Overview",
+                closable = FALSE,
+                width = NULL,
+                status = "warning",
+                solidHeader = TRUE,
+                collapsible = TRUE,
+                h1("2020 DSPG Hotline"),
+                
+                h2("Project Description"),
+                p("Create an analytic strategy that maximizes the actionable insights yielded from the hotline data."),
+                
+                h2("Project Goals"),
+                p("Project goals include developing a system for extension that provides:
+                    a) timely analysis of call logs, chats, and emails associated with the helplines;
+                    b) insights about the needs of Iowan's by time, place, and topic;
+                    c) additional infrastructure to support Extension Specialists that work with the helplines."),
+                
+                h2("Our Approach"),
+                p("- Review current hotline data architecture
+                     - Collect current hotline data as well as other data sources
+                     - Develope Shiny Dashboard application"),
+                
+                h2("Ethical Considerations"),
+                p("We took the utmost caution when it came to the privacy of our clients data.")
               )
-      ),
+            )
+            
+    ),
     
     tabItem(tabName = 'sentiment',
             fluidRow(
@@ -236,8 +254,13 @@ body <- dashboardBody(
                               choices = unique(completex$Call_Number),
                               selected = "6183")
                 ),
-                plotlyOutput(outputId = "lineplot"), style = "height:400px"
-              )
+                plotlyOutput(outputId = "lineplot"), style = "height:400px"                   
+
+              ),                 p("1111111111111111111111111111111111111111111111111111111111111111111111111111111111111"),
+                                 br()
+            
+ 
+              
             ),
             
             fluidRow(
@@ -258,7 +281,8 @@ body <- dashboardBody(
                               selected = "6183")
                 ),
                 plotOutput(outputId = "hexplot"), style = "height:400px"
-              )
+              ),               p("2222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222"),
+                               br()
             ),
             
             fluidRow( #Two Graph Developement
@@ -284,10 +308,11 @@ body <- dashboardBody(
                   
                 ),
                 plotlyOutput(outputId = "twoplot"), style = "height:400px"
-              )
+              ),               p("33333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333"),
+                               br()
             ),
             
-            fluidRow(
+            fluidRow(column(11,
               
               boxPlus(
                 width = 7,
@@ -304,7 +329,10 @@ body <- dashboardBody(
                               choices = unique(transcripts$Call_Number),
                               selected = "6183")
                 ),
-                textOutput("calllog"), style = "height:300px; overflow-y: scroll;")
+                textOutput("calllog"), style = "height:300px; overflow-y: scroll;")),
+              
+              column(1, 
+                     actionButton("play", "Play the Audio"))
             )
             
     ),
@@ -329,7 +357,9 @@ body <- dashboardBody(
                               selected = "January")
                 ),
                 plotlyOutput(outputId = "output")
-              )
+              ),
+                             p("44444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444"),
+                             br()
             ),
             
             fluidRow(
@@ -350,7 +380,8 @@ body <- dashboardBody(
                               selected = "January")
                 ),
                 plotlyOutput(outputId = "outcome_plot")
-              )
+              ),               p("555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555"),
+                               br()
             ),
             
             fluidRow(
@@ -371,7 +402,8 @@ body <- dashboardBody(
                               selected = "January")
                 ),
                 plotlyOutput(outputId = "call_information_plot")
-              )
+              ),               p("6666666666666666666666666666666666666666666666666666666666666666666666666666666666666666"),
+                               br()
             ),
             
             fluidRow(
@@ -392,7 +424,8 @@ body <- dashboardBody(
                               selected = "January")
                 ),
                 plotlyOutput(outputId = "referral_plot")
-              )
+              ),               p("77777777777777777777777777777777777777777777777777777777777777777777777777777777777."),
+                               br()
             ),
             
             fluidRow(
@@ -413,7 +446,8 @@ body <- dashboardBody(
                               selected = "January")
                 ),
                 plotlyOutput(outputId = "web_stats_plot")
-              )
+              ),                 p("88888888888888888888888888888888888888888888888888888888888888888888888888888888888"),
+                                 br()
             ),
             
             fluidRow(
@@ -434,7 +468,8 @@ body <- dashboardBody(
                               selected = "January")
                 ),
                 plotlyOutput(outputId = "brochure_plot")
-              )
+              ),               p("9999999999999999999999999999999999999999999999999999999999999999999999999999999999999999"),
+                               br()
             ),
             
             fluidRow(
@@ -455,7 +490,8 @@ body <- dashboardBody(
                               selected = "FY2015")
                 ),
                 plotlyOutput(outputId = "stats_plot")
-              )
+              ),               p("GRAPHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH 10"),
+                               br()
             )
             
     ),
@@ -480,7 +516,8 @@ body <- dashboardBody(
                               selected = "2020")
                 ),
                 plotOutput(outputId = "linex_plot")
-              )
+              ),                 p("GRAPHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH 11"),
+                                 br()
             ),
             
             fluidRow(
@@ -501,11 +538,17 @@ body <- dashboardBody(
                               selected = "2020")
                 ),
                 plotOutput(outputId = "bubblex_plot")
-              )
+              ),                   p("GRAPHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH 12"),
+                                   br()
             ),
             
             fluidRow(
-              rglwidgetOutput("MAPPlot")
+              
+              column(5,
+                     rglwidgetOutput("MAPPlot")),
+              
+              column(5,
+                     plotlyOutput("dscat"))
             )
             
     )
@@ -709,9 +752,43 @@ server <- function(input, output){
       geom_sf(data = iowa2, aes(fill = n))+
       scale_fill_viridis_c(option = "plasma")
     
-    plot_gg(gg2, width = 5, height = 3, scale = 300, multicore = TRUE, windowsize = c(500, 300))
+    plot_gg(gg2, width = 5, height = 3, scale = 300, multicore = TRUE, windowsize = c(500, 500))
     rglwidget()
     
+  })
+  
+  output$dscat <- renderPlotly({
+    
+    graph <- calldetails %>%
+      separate('start_date', into = c("month","day","year")) %>%
+      group_by(day,month, year, Total_Time,num_of_calls )%>%
+      summarise(sumTotalTime = sum(Total_Time)) %>%
+      filter(year == 2020) 
+      
+    plot_ly(graph, x=~day, y=~num_of_calls, 
+              z=~Total_Time,
+              text=~Total_Time,
+              color = ~month,
+              mode = 'markers',
+              type='scatter3d')
+  
+    
+  })
+  
+  
+  #------------------------------------------------------------------------#
+  
+  
+  #Soundwav <- Wave(left = Soundfile)
+  #savewav(Soundwav, filename = "6183.wav")
+  
+  
+  
+  observeEvent(input$play, {
+    insertUI(selector = "#play",
+             where = "afterEnd",
+             ui = tags$audio(src = "/Hotline_Shiny/wav_files/6183.wav", type = "audio/wav", autoplay = NA, controls = NA, style="display:none;")  
+    )
   })
 }
 
