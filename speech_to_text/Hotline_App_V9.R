@@ -21,7 +21,9 @@ library(viridisLite)
 library(viridis)
 library(rayshader)
 library(magick)
+#library(shinyjs)
 
+#library(shinyjs)
 #-----------------------------------------------------------------------------------------#
 
 #Load speech to text data and Tammy's data
@@ -185,16 +187,63 @@ iowa2 <- iowa %>% filter(NPA == '563')
 
 #--------------------------------------------------------------------------------------------------------------#
 
+CCT = read_csv("CCT.csv", col_names = FALSE)
+CCT$X1 = as.Date(paste("01",CCT$X1),format = "%d %b - %y")
+CCT$Classification = c("CCT")
+Covid = read_csv("Covid.csv", col_names = FALSE)
+Covid$X1 = as.Date(paste("01",Covid$X1),format = "%d %b - %y")
+Covid$Classification = c("Covid")
+Advocacy = read_csv("Advocacy.csv", col_names = FALSE)
+Advocacy$X1 = as.Date(paste("01",Advocacy$X1),format = "%d %b - %y")
+Advocacy$Classification = c("Advocacy")
+
+Crisis = read_csv("Crisis.csv", col_names = FALSE)
+Crisis$X1 = as.Date(paste("01",Crisis$X1),format = "%d %b - %y")
+Crisis$Classification = c("Crisis")
+
+#Follow_Up = read_csv("Follow_Up.csv", col_names = FALSE)
+#Follow_Up$X1 = as.Date(paste("01",Follow_Up$X1),format = "%d %b - %y")
+#Follow_Up$Classification = c("Follow_Up")
+
+Information_giving = read_csv("Information_giving.csv", col_names = FALSE)
+Information_giving$X1 = as.Date(paste("01",Information_giving$X1),format = "%d %b - %y")
+Information_giving$Classification = c("Information_giving")
+
+Peer_Counselling = read_csv("Peer_Counselling.csv", col_names = FALSE)
+Peer_Counselling$X1 = as.Date(paste("01",Peer_Counselling$X1),format = "%d %b - %y")
+Peer_Counselling$Classification = c("Peer_Counselling")
+
+Quality_Assurance = read_csv("Quality_Assurance.csv", col_names = FALSE)
+Quality_Assurance$X1 = as.Date(paste("01",Quality_Assurance$X1),format = "%d %b - %y")
+Quality_Assurance$Classification = c("Quality_Assurance")
+
+Referral = read_csv("Referral.csv", col_names = FALSE)
+Referral$X1 = as.Date(paste("01",Referral$X1),format = "%d %b - %y")
+Referral$Classification = c("Referral")
+
+Referral_Giving = read_csv("Referral_Giving.csv", col_names = FALSE)
+Referral_Giving$X1 = as.Date(paste("01",Referral_Giving$X1),format = "%d %b - %y")
+
+Referral_Giving$Classification = c("Referral_Giving")
+
+Final <- rbind(Advocacy, CCT, Covid, Crisis, Information_giving, Peer_Counselling, Quality_Assurance, Referral, Referral_Giving)
+Final$Classification <- as.factor(Final$Classification)
+
+
+#---------------------------------------------------------------------------------------------------------------#
+
 
 #Sidebar menu and icons
 
 sidebar <- dashboardSidebar(
   
   sidebarMenu(
+    
     menuItem("Project Description", icon = icon("diagnoses"), tabName = "description"),
     menuItem("Sentiment Analysis", icon = icon("diagnoses"), tabName = 'sentiment'),
     menuItem("Call information Panel", icon = icon("bar-chart-o"), tabName = "bar"),
-    menuItem("Call Numbers Panel", icon = icon("bar-chart-o"), tabName = "bubble")
+    menuItem("Call Data Panel 1", icon = icon("bar-chart-o"), tabName = "bubble"),
+    menuItem("Call Data Panel 2", icon = icon("bar-chart-o"), tabName = "bubble2")
     
   )
   
@@ -256,7 +305,9 @@ body <- dashboardBody(
                 ),
                 plotlyOutput(outputId = "lineplot"), style = "height:400px"                   
 
-              ),                 p("1111111111111111111111111111111111111111111111111111111111111111111111111111111111111"),
+              ),                 p("On the x-axis, the call record shows the timeline of a call. Y-axis shows the average sentiment score of the sentence spoken at that timeframe. 
+                                   The orange line represents speaker one while the blue line represents speaker two. 
+                                   Together, we can observe the fluctuation in the emotion of the parties that are involved in the call"),
                                  br()
             
  
@@ -332,8 +383,11 @@ body <- dashboardBody(
                 textOutput("calllog"), style = "height:300px; overflow-y: scroll;")),
               
               column(1, 
-                     actionButton("play", "Play the Audio"))
-            )
+                     #useShinyjs(),
+                     #extendShinyjs(script = "beep.js"),
+                     actionButton("beep", "Beep"))
+              )
+            
             
     ),
     
@@ -551,10 +605,37 @@ body <- dashboardBody(
                      plotlyOutput("dscat"))
             )
             
-    )
+    ),
+  
+  tabItem(tabName = "bubble2",
+          
+          fluidRow(
+            
+            boxPlus(
+              
+              width = 12,
+              title = "I-Carol Datasets", 
+              closable = TRUE, 
+             status = "primary", 
+              solidHeader = TRUE, 
+              collapsible = TRUE,
+              enable_sidebar = TRUE,
+              sidebar_width = 10,
+              sidebar_start_open = FALSE,
+              sidebar_content = tagList(
+                checkboxGroupInput(inputId = "calldata_var", label = strong("Variables to show:"),
+                                   choices = unique(Final$Classification), selected = NULL),
+
+              ),
+              plotlyOutput(outputId = "calldata_plot")
+            )
+          )
+          
+          )
     
+    )
   )
-)
+
 
 
 #---------------------------------------------------------------------------#
@@ -626,6 +707,10 @@ server <- function(input, output){
   
   filtered_data13 <- reactive({
     filter(d, year == input$yearx2)
+  })
+  
+  filtered_data14 <-reactive({
+    filter(Final, Classification %in% input$calldata_var)
   })
   
   
@@ -775,21 +860,30 @@ server <- function(input, output){
     
   })
   
+  output$calldata_plot = renderPlotly({plot_ly(filtered_data14(), x = ~X1, y= ~X2, color= ~Classification, mode="lines+markers",type='scatter') %>%
+      layout(title = "Call Data",
+             xaxis = list(
+               rangeslider = list(type = "Date"),
+               title="Date"),
+             yaxis = list(title = "Number of Calls"))
+  })
+  
   
   #------------------------------------------------------------------------#
   
   
-  #Soundwav <- Wave(left = Soundfile)
-  #savewav(Soundwav, filename = "6183.wav")
+  #observeEvent(input$beep, {
+    #js$beep()
+  #})
   
   
   
-  observeEvent(input$play, {
-    insertUI(selector = "#play",
-             where = "afterEnd",
-             ui = tags$audio(src = "/Hotline_Shiny/wav_files/6183.wav", type = "audio/wav", autoplay = NA, controls = NA, style="display:none;")  
-    )
-  })
+  #observeEvent(input$play, {
+    #insertUI(selector = "#play",
+             #where = "afterEnd",
+             #ui = tags$audio(src = "6183.wav", type = "audio/wav", autoplay = NA, controls = NA, style="display:none;")  
+    #)
+  #})
 }
 
 
