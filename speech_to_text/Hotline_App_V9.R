@@ -28,206 +28,7 @@ library(magick)
 
 #Load speech to text data and Tammy's data
 
-completex <- read.csv("completex_text.csv")
-
-transcripts <- read.csv("rough_data_trans.csv")
-
-Tammy_Data <- read_excel("Tammy_Data.xlsx", sheet = "Call Topic")
-
-Outcome_Data <- read_excel("Tammy_Data.xlsx", sheet = "Outcome")
-
-transcripts$Call_Number <- as.factor(transcripts$Call_Number) #change to factor 
-
-
-call_information = read_excel("Tammy_Data.xlsx", sheet = "Call Information")
-
-referral = read_excel("Tammy_Data.xlsx", sheet = "Referral")
-
-stats = read_excel("Tammy_Data.xlsx", sheet = "STATS")
-
-web_stats = read_excel("Tammy_Data.xlsx", sheet = "Website stats")
-
-brochure = read_excel("Tammy_Data.xlsx", sheet = "Brochure")
-
-
-#-----------------------------------------------------------------------------------------#
-
-library(tidyr)
-
-Tammy_Data_Long <- gather(Tammy_Data, Month_and_Annual, Number_of_Cases, October:Annual, factor_key = TRUE ) #Convert from wide to long format
-
-Tammy_Data_Long$Topic <- as.factor(Tammy_Data_Long$Topic)#change to factor
-
-Outcome_Data_Long <- gather(Outcome_Data, Month_and_Annual, Number_of_Cases, October:Annual, factor_key = TRUE)#Convert from wide to long format
-
-Outcome_Data_Long$Outcome <- as.factor(Outcome_Data_Long$Outcome) #change to factor
-
-
-
-call_information_Long <- gather(call_information, Month_and_Annual, Number_of_Cases, October:Annual, factor_key = TRUE ) #Convert from wide to long format
-
-#Renaming first column
-call_information_Long = call_information_Long %>% rename(information = names(.)[1])
-
-call_information_Long$information  <- as.factor(call_information_Long$information) #change to factor
-
-referral_Long = gather(referral, Month_and_Annual, Number_of_Cases, October:Annual, factor_key = TRUE ) #Convert from wide to long format
-
-referral_Long$Referral = as.factor(referral_Long$Referral) #change to factor
-
-web_stats_Long = gather(web_stats, Month_and_Annual, Number_of_Cases, October:Annual, factor_key = TRUE ) #Convert from wide to long format
-
-#Renaming first column
-web_stats_Long = web_stats_Long %>% rename(information = names(.)[1])
-
-web_stats_Long$information  <- as.factor(web_stats_Long$information) #change to factor
-
-brochure_Long = gather(brochure, Month_and_Annual, Number_of_Cases, October:Annual, factor_key = TRUE ) #Convert from wide to long format
-
-brochure_Long = brochure_Long %>% rename(information = names(.)[1])
-
-
-brochure_Long$information  <- as.factor(brochure_Long$information) #change to factor
-
-stats_Long = gather(stats, Years, Number_of_Cases, FY2015:FY2020, factor_key = TRUE ) #Convert from wide to long format
-
-#Renaming first column
-stats_Long = stats_Long %>% rename(Months = names(.)[1])
-
-stats_Long$Months  <- as.factor(stats_Long$Months) #change to factor
-#--------------------------------------------------------------------------------------------------------------#
-
-completex$ave_sentiment_dup <- completex$ave_sentiment
-
-
-#--------------------------------------------------------------------------------------------------------------#
-
-
-calldetails<- read.csv("call-detail20200713.csv")
-head(calldetails)
-
-data <- calldetails %>% 
-  group_by(start_date) %>%
-  mutate(date_count= n()) %>%
-  mutate(sum_total_time= sum(Total_Time))
-
-
-b <- calldetails %>% separate('start_date', into = c("month","day","year"))
-
-
-#Making line plot
-
-c <-b %>%
-  group_by(day,month, year)%>% 
-  summarise(sumTotalTime = sum(Total_Time))
-
-
-
-
-d <-b %>%
-  group_by(day,month, year, Total_Time)%>% 
-  summarise(sumTotalTime = sum(Total_Time))
-
-
-
-
-head(calldetails)
-calldetails$start_date <- as.character(calldetails$start_date)
-calldetails$num_of_calls <- as.numeric(ave(calldetails$start_date, calldetails$start_date, FUN = length))
-
-
-
-
-#--------------------------------------------------------------------------------------------------------------#
-library(sf)
-
-df <- read.csv("call-detail20200713.csv")
-
-df$ANI_DIALNUM <- as.character(df$ANI_DIALNUM)
-df$contact_name <- as.character(df$contact_name)
-
-
-df$ANI_DIALNUM <- gsub("(\\d{3})(\\d{3})(\\d{4})$","\\1-\\2-\\3",df$ANI_DIALNUM)
-df$contact_name <- gsub("(\\d{3})(\\d{3})(\\d{4})$","\\1-\\2-\\3",df$contact_name)
-
-area_code_IA <- df 
-
-
-area_code_IA <- separate(area_code_IA, col = ANI_DIALNUM, into = c("NPA","second", "third"), sep = "-", remove = FALSE)
-
-area_code_IA1 <- area_code_IA[area_code_IA$NPA == "712", ]
-area_code_IA2 <- area_code_IA[area_code_IA$NPA == "641", ]
-area_code_IA3 <- area_code_IA[area_code_IA$NPA == "563", ]
-area_code_IA4 <- area_code_IA[area_code_IA$NPA == "515", ]
-area_code_IA5 <- area_code_IA[area_code_IA$NPA == "319", ]
-
-
-area_code_IA <- rbind(area_code_IA1, area_code_IA2, area_code_IA3, area_code_IA4, area_code_IA5)
-
-area_code_IA <- area_code_IA %>% select(-second, -third)
-
-
-df_x <- area_code_IA %>%
-  group_by(NPA) %>%
-  count()
-
-
-USA <- st_read("/Hotline_Shiny/AreaCode/AreaCode.shp")
-
-names(USA)
-
-
-iowa <- USA %>% filter(NPA %in% c("712", "641", "563", "515", "319"))
-
-iowa <- left_join(iowa, df_x, by = "NPA")
-
-iowa2 <- iowa %>% filter(NPA == '563')
-
-
-
-#--------------------------------------------------------------------------------------------------------------#
-
-CCT = read_csv("CCT.csv", col_names = FALSE)
-CCT$X1 = as.Date(paste("01",CCT$X1),format = "%d %b - %y")
-CCT$Classification = c("CCT")
-Covid = read_csv("Covid.csv", col_names = FALSE)
-Covid$X1 = as.Date(paste("01",Covid$X1),format = "%d %b - %y")
-Covid$Classification = c("Covid")
-Advocacy = read_csv("Advocacy.csv", col_names = FALSE)
-Advocacy$X1 = as.Date(paste("01",Advocacy$X1),format = "%d %b - %y")
-Advocacy$Classification = c("Advocacy")
-
-Crisis = read_csv("Crisis.csv", col_names = FALSE)
-Crisis$X1 = as.Date(paste("01",Crisis$X1),format = "%d %b - %y")
-Crisis$Classification = c("Crisis")
-
-#Follow_Up = read_csv("Follow_Up.csv", col_names = FALSE)
-#Follow_Up$X1 = as.Date(paste("01",Follow_Up$X1),format = "%d %b - %y")
-#Follow_Up$Classification = c("Follow_Up")
-
-Information_giving = read_csv("Information_giving.csv", col_names = FALSE)
-Information_giving$X1 = as.Date(paste("01",Information_giving$X1),format = "%d %b - %y")
-Information_giving$Classification = c("Information_giving")
-
-Peer_Counselling = read_csv("Peer_Counselling.csv", col_names = FALSE)
-Peer_Counselling$X1 = as.Date(paste("01",Peer_Counselling$X1),format = "%d %b - %y")
-Peer_Counselling$Classification = c("Peer_Counselling")
-
-Quality_Assurance = read_csv("Quality_Assurance.csv", col_names = FALSE)
-Quality_Assurance$X1 = as.Date(paste("01",Quality_Assurance$X1),format = "%d %b - %y")
-Quality_Assurance$Classification = c("Quality_Assurance")
-
-Referral = read_csv("Referral.csv", col_names = FALSE)
-Referral$X1 = as.Date(paste("01",Referral$X1),format = "%d %b - %y")
-Referral$Classification = c("Referral")
-
-Referral_Giving = read_csv("Referral_Giving.csv", col_names = FALSE)
-Referral_Giving$X1 = as.Date(paste("01",Referral_Giving$X1),format = "%d %b - %y")
-
-Referral_Giving$Classification = c("Referral_Giving")
-
-Final <- rbind(Advocacy, CCT, Covid, Crisis, Information_giving, Peer_Counselling, Quality_Assurance, Referral, Referral_Giving)
-Final$Classification <- as.factor(Final$Classification)
+load("Hotline_data.RData")
 
 
 #---------------------------------------------------------------------------------------------------------------#
@@ -332,7 +133,8 @@ body <- dashboardBody(
                               selected = "6183")
                 ),
                 plotOutput(outputId = "hexplot"), style = "height:400px"
-              ),               p("2222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222"),
+              ),               p("Hex plots are used to plot sentiment score points on a timeline of a record(x-axis) 
+                                 and a sentiment score (vertical axis) in the attempt to show how much the average sentiment score is affected by the timeline of a call"),
                                br()
             ),
             
@@ -359,11 +161,12 @@ body <- dashboardBody(
                   
                 ),
                 plotlyOutput(outputId = "twoplot"), style = "height:400px"
-              ),               p("33333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333"),
+              ),               p("The left distribution histogram shows slightly right skewed. X axis is the average sentiment score for the speaker which shows the range of sentiment score values with equal intervals. 
+                                 The height of the histogram is count how many values fall into each interval."),
                                br()
             ),
             
-            fluidRow(column(11,
+            fluidRow(
               
               boxPlus(
                 width = 7,
@@ -380,13 +183,8 @@ body <- dashboardBody(
                               choices = unique(transcripts$Call_Number),
                               selected = "6183")
                 ),
-                textOutput("calllog"), style = "height:300px; overflow-y: scroll;")),
-              
-              column(1, 
-                     #useShinyjs(),
-                     #extendShinyjs(script = "beep.js"),
-                     actionButton("beep", "Beep"))
-              )
+                textOutput("calllog"), style = "height:300px; overflow-y: scroll;")
+            )
             
             
     ),
@@ -758,8 +556,7 @@ server <- function(input, output){
   
   
   output$calllog <- renderText({filtered_data2() %>%
-      select(Call_Transcript) %>% 
-      as.character() #Interactive Transricpts
+      select(Call_Transcript) %>% as.character() #Interactive Transricpts
   })
   
   
