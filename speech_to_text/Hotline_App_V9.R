@@ -1,37 +1,46 @@
 #Load required Packages
 
-options(rgl.useNULL = TRUE)
+options(rgl.useNULL = TRUE) #Used for integrating rayshader into shiny
 
 packages <- c("dplyr", "purrr", "stringr", "readxl",
-              "magrittr", "stringr", "ggplot2", "shiny", "sentimentr",
-              "shinythemes", "shinydashboard", "shinydashboardPlus", "plotly")
+              "magrittr", "stringr")
 
 for (pkgs in packages){
   if(!require(pkgs, character.only = TRUE)){ # Condition 
-    install.packages(pkgs) # Install if not
+    install.packages(pkgs) # Install if not in set 1
     library(pkgs) # Load if installed
   }
 }
 
+
+packages_2 <- c("ggplot2", "shiny", "sentimentr",
+                "shinythemes", "shinydashboard", "shinydashboardPlus", "plotly")
+
+for (pkgs2 in packages_2){
+  if(!require(pkgs2, character.only = TRUE)){ # Condition 
+    install.packages(pkgs2) # Install if not in set 2
+    library(pkgs2) # Load if installed
+  }
+}
+
+
+packages_3 <- c("tidyverse", "lubridate", "hrbrthemes", "viridis", "viridisLite",
+                "rayshader", "magick")
+
+for (pkgs3 in packages_3){
+  if(!require(pkgs3, character.only = TRUE)){ # Condition 
+    install.packages(pkgs3) # Install if not in set 3
+    library(pkgs3) # Load if installed
+  }
+}
+
 library(rgl)
-library(tidyverse)
-library(lubridate)
-library(hrbrthemes)
-library(viridisLite)
-library(viridis)
-library(rayshader)
-library(magick)
-#library(shinyjs)
-
-#library(shinyjs)
-#-----------------------------------------------------------------------------------------#
-
-#Load speech to text data and Tammy's data
 
 load("Hotline_data.RData")
+load("Hotline_Correct_data.RData")
 
 
-#---------------------------------------------------------------------------------------------------------------#
+calldetails$num_of_calls <- as.numeric(ave(calldetails$start_date, calldetails$start_date, FUN = length))
 
 
 #Sidebar menu and icons
@@ -43,8 +52,10 @@ sidebar <- dashboardSidebar(
     menuItem("Project Description", icon = icon("diagnoses"), tabName = "description"),
     menuItem("Sentiment Analysis", icon = icon("diagnoses"), tabName = 'sentiment'),
     menuItem("Call information Panel", icon = icon("bar-chart-o"), tabName = "bar"),
-    menuItem("Call Data Panel 1", icon = icon("bar-chart-o"), tabName = "bubble"),
-    menuItem("Call Data Panel 2", icon = icon("bar-chart-o"), tabName = "bubble2")
+    menuItem("Nice Data", icon = icon("bar-chart-o"),
+             menuSubItem("Call Information",icon = icon("angle-right"), tabName = "bubble1"),
+             menuSubItem("3D Plots", icon = icon("angle-right"), tabName = "bubble2")),
+    menuItem("ICarel Data", icon = icon("bar-chart-o"), tabName = "bubble3")
     
   )
   
@@ -70,20 +81,20 @@ body <- dashboardBody(
                 
                 h2("Project Goals"),
                 p("Project goals include developing a system for extension that provides:
-                    a) timely analysis of call logs, chats, and emails associated with the helplines;
-                    b) insights about the needs of Iowan's by time, place, and topic;
-                    c) additional infrastructure to support Extension Specialists that work with the helplines."),
+                  a) timely analysis of call logs, chats, and emails associated with the helplines;
+                  b) insights about the needs of Iowan's by time, place, and topic;
+                  c) additional infrastructure to support Extension Specialists that work with the helplines."),
                 
                 h2("Our Approach"),
                 p("- Review current hotline data architecture
-                     - Collect current hotline data as well as other data sources
-                     - Develope Shiny Dashboard application"),
+                  - Collect current hotline data as well as other data sources
+                  - Develope Shiny Dashboard application"),
                 
                 h2("Ethical Considerations"),
                 p("We took the utmost caution when it came to the privacy of our clients data.")
-              )
-            )
-            
+                )
+    )
+    
     ),
     
     tabItem(tabName = 'sentiment',
@@ -105,15 +116,15 @@ body <- dashboardBody(
                               selected = "6183")
                 ),
                 plotlyOutput(outputId = "lineplot"), style = "height:400px"                   
-
+                
               ),                 p("On the x-axis, the call record shows the timeline of a call. Y-axis shows the average sentiment score of the sentence spoken at that timeframe. 
                                    The orange line represents speaker one while the blue line represents speaker two. 
                                    Together, we can observe the fluctuation in the emotion of the parties that are involved in the call"),
-                                 br()
-            
- 
+              br()
               
-            ),
+              
+              
+              ),
             
             fluidRow(
               
@@ -135,7 +146,7 @@ body <- dashboardBody(
                 plotOutput(outputId = "hexplot"), style = "height:400px"
               ),               p("Hex plots are used to plot sentiment score points on a timeline of a record(x-axis) 
                                  and a sentiment score (vertical axis) in the attempt to show how much the average sentiment score is affected by the timeline of a call"),
-                               br()
+              br()
             ),
             
             fluidRow( #Two Graph Developement
@@ -163,27 +174,29 @@ body <- dashboardBody(
                 plotlyOutput(outputId = "twoplot"), style = "height:400px"
               ),               p("The left distribution histogram shows slightly right skewed. X axis is the average sentiment score for the speaker which shows the range of sentiment score values with equal intervals. 
                                  The height of the histogram is count how many values fall into each interval."),
-                               br()
+              br()
             ),
             
-            fluidRow(
-              
-              boxPlus(
-                width = 7,
-                title = "Call Transcript", 
-                closable = TRUE, 
-                status = "warning", 
-                solidHeader = TRUE, 
-                collapsible = TRUE,
-                enable_sidebar = TRUE,
-                sidebar_width = 8,
-                sidebar_start_open = FALSE,
-                sidebar_content = tagList(
-                  selectInput(inputId = "call_number2", label = strong("Select Log"),
-                              choices = unique(transcripts$Call_Number),
-                              selected = "6183")
-                ),
-                textOutput("calllog"), style = "height:300px; overflow-y: scroll;")
+            fluidRow(column(11, 
+                            
+                            boxPlus(
+                              width = 7,
+                              title = "Call Transcript", 
+                              closable = TRUE, 
+                              status = "warning", 
+                              solidHeader = TRUE, 
+                              collapsible = TRUE,
+                              enable_sidebar = TRUE,
+                              sidebar_width = 8,
+                              sidebar_start_open = FALSE,
+                              sidebar_content = tagList(
+                                selectInput(inputId = "call_number2", label = strong("Select Log"),
+                                            choices = unique(transcripts$Call_Number),
+                                            selected = "6183")
+                              ),
+                              textOutput("calllog"), style = "height:300px; overflow-y: scroll;")),
+                     
+                     column(1, actionButton( 'play_audio', 'Play Audio' ))
             )
             
             
@@ -210,8 +223,8 @@ body <- dashboardBody(
                 ),
                 plotlyOutput(outputId = "output")
               ),
-                             p("44444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444"),
-                             br()
+              p("44444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444"),
+              br()
             ),
             
             fluidRow(
@@ -233,7 +246,7 @@ body <- dashboardBody(
                 ),
                 plotlyOutput(outputId = "outcome_plot")
               ),               p("555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555"),
-                               br()
+              br()
             ),
             
             fluidRow(
@@ -255,7 +268,7 @@ body <- dashboardBody(
                 ),
                 plotlyOutput(outputId = "call_information_plot")
               ),               p("6666666666666666666666666666666666666666666666666666666666666666666666666666666666666666"),
-                               br()
+              br()
             ),
             
             fluidRow(
@@ -277,7 +290,7 @@ body <- dashboardBody(
                 ),
                 plotlyOutput(outputId = "referral_plot")
               ),               p("77777777777777777777777777777777777777777777777777777777777777777777777777777777777."),
-                               br()
+              br()
             ),
             
             fluidRow(
@@ -299,7 +312,7 @@ body <- dashboardBody(
                 ),
                 plotlyOutput(outputId = "web_stats_plot")
               ),                 p("88888888888888888888888888888888888888888888888888888888888888888888888888888888888"),
-                                 br()
+              br()
             ),
             
             fluidRow(
@@ -321,7 +334,7 @@ body <- dashboardBody(
                 ),
                 plotlyOutput(outputId = "brochure_plot")
               ),               p("9999999999999999999999999999999999999999999999999999999999999999999999999999999999999999"),
-                               br()
+              br()
             ),
             
             fluidRow(
@@ -343,12 +356,12 @@ body <- dashboardBody(
                 ),
                 plotlyOutput(outputId = "stats_plot")
               ),               p("GRAPHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH 10"),
-                               br()
+              br()
             )
             
     ),
     
-    tabItem(tabName = "bubble",
+    tabItem(tabName = "bubble1",
             
             fluidRow(
               
@@ -369,7 +382,7 @@ body <- dashboardBody(
                 ),
                 plotOutput(outputId = "linex_plot")
               ),                 p("GRAPHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH 11"),
-                                 br()
+              br()
             ),
             
             fluidRow(
@@ -391,8 +404,12 @@ body <- dashboardBody(
                 ),
                 plotOutput(outputId = "bubblex_plot")
               ),                   p("GRAPHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH 12"),
-                                   br()
-            ),
+              br()
+            )
+            
+    ),
+    
+    tabItem(tabName = "bubble2",
             
             fluidRow(
               
@@ -404,35 +421,35 @@ body <- dashboardBody(
             )
             
     ),
-  
-  tabItem(tabName = "bubble2",
-          
-          fluidRow(
+    
+    tabItem(tabName = "bubble3",
             
-            boxPlus(
+            fluidRow(
               
-              width = 12,
-              title = "I-Carol Datasets", 
-              closable = TRUE, 
-             status = "primary", 
-              solidHeader = TRUE, 
-              collapsible = TRUE,
-              enable_sidebar = TRUE,
-              sidebar_width = 10,
-              sidebar_start_open = FALSE,
-              sidebar_content = tagList(
-                checkboxGroupInput(inputId = "calldata_var", label = strong("Variables to show:"),
-                                   choices = unique(Final$Classification), selected = NULL),
-
-              ),
-              plotlyOutput(outputId = "calldata_plot")
+              boxPlus(
+                
+                width = 12,
+                title = "I-Carol Datasets", 
+                closable = TRUE, 
+                status = "primary", 
+                solidHeader = TRUE, 
+                collapsible = TRUE,
+                enable_sidebar = TRUE,
+                sidebar_width = 10,
+                sidebar_start_open = FALSE,
+                sidebar_content = tagList(
+                  checkboxGroupInput(inputId = "calldata_var", label = strong("Variables to show:"),
+                                     choices = unique(Final$Classification), selected = NULL),
+                  
+                ),
+                plotlyOutput(outputId = "calldata_plot")
+              )
             )
-          )
-          
-          )
+            
+    )
     
     )
-  )
+)
 
 
 
@@ -646,14 +663,14 @@ server <- function(input, output){
       group_by(day,month, year, Total_Time,num_of_calls )%>%
       summarise(sumTotalTime = sum(Total_Time)) %>%
       filter(year == 2020) 
-      
+    
     plot_ly(graph, x=~day, y=~num_of_calls, 
-              z=~Total_Time,
-              text=~Total_Time,
-              color = ~month,
-              mode = 'markers',
-              type='scatter3d')
-  
+            z=~Total_Time,
+            text=~Total_Time,
+            color = ~month,
+            mode = 'markers',
+            type='scatter3d')
+    
     
   })
   
@@ -670,17 +687,17 @@ server <- function(input, output){
   
   
   #observeEvent(input$beep, {
-    #js$beep()
+  #js$beep()
   #})
   
   
   
-  #observeEvent(input$play, {
-    #insertUI(selector = "#play",
-             #where = "afterEnd",
-             #ui = tags$audio(src = "6183.wav", type = "audio/wav", autoplay = NA, controls = NA, style="display:none;")  
-    #)
-  #})
+  observeEvent(input$play_audio, {
+    insertUI(selector = "#play_audio",
+             where = "afterEnd",
+             ui = tags$audio(src = "6183.wav", type = "audio/wav", autoplay = NA, controls = NA, style="display:none;")  
+    )
+  })
 }
 
 
