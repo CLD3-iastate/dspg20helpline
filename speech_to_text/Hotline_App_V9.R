@@ -1,44 +1,73 @@
 #Load required Packages
 
-options(rgl.useNULL = TRUE) #Used for integrating rayshader into shiny
-
-packages <- c("dplyr", "purrr", "stringr", "readxl",
-              "magrittr", "stringr")
-
-for (pkgs in packages){
-  if(!require(pkgs, character.only = TRUE)){ # Condition 
-    install.packages(pkgs) # Install if not in set 1
-    library(pkgs) # Load if installed
-  }
-}
 
 
-packages_2 <- c("ggplot2", "shiny", "sentimentr",
-                "shinythemes", "shinydashboard", "shinydashboardPlus", "plotly")
+#packages <- c("dplyr", "purrr", "stringr", "readxl",
+ #             "magrittr", "stringr")
 
-for (pkgs2 in packages_2){
-  if(!require(pkgs2, character.only = TRUE)){ # Condition 
-    install.packages(pkgs2) # Install if not in set 2
-    library(pkgs2) # Load if installed
-  }
-}
+#for (pkgs in packages){
+ # if(!require(pkgs, character.only = TRUE)){ # Condition 
+  #  install.packages(pkgs) # Install if not in set 1
+   # library(pkgs) # Load if installed
+  #}
+#}
 
 
-packages_3 <- c("tidyverse", "lubridate", "hrbrthemes", "viridis", "viridisLite",
-                "rayshader", "magick")
 
-for (pkgs3 in packages_3){
-  if(!require(pkgs3, character.only = TRUE)){ # Condition 
-    install.packages(pkgs3) # Install if not in set 3
-    library(pkgs3) # Load if installed
-  }
-}
 
+
+#packages_2 <- c("ggplot2", "shiny", "sentimentr",
+#                "shinythemes", "shinydashboard", "shinydashboardPlus", "plotly")
+
+#for (pkgs2 in packages_2){
+#  if(!require(pkgs2, character.only = TRUE)){ # Condition 
+#    install.packages(pkgs2) # Install if not in set 2
+#    library(pkgs2) # Load if installed
+#  }
+#}
+
+
+#packages_3 <- c("tidyverse", "lubridate", "hrbrthemes", "viridis", "viridisLite",
+ #               "rayshader", "magick")
+
+#for (pkgs3 in packages_3){
+#  if(!require(pkgs3, character.only = TRUE)){ # Condition 
+#    install.packages(pkgs3) # Install if not in set 3
+#    library(pkgs3) # Load if installed
+#  }
+#}
+
+
+
+
+library(dplyr)
+library(purrr)
+library(stringr)
+library(readxl)
+library(magrittr)
+library(stringr)
+library(ggplot2)
+library(shiny)
+library(sentimentr)
+library(shinythemes)
+library(shinydashboard)
+library(shinydashboardPlus)
+library(plotly)
+library(tidyverse)
+library(lubridate)
+library(hrbrthemes)
+library(viridis)
+library(viridisLite)
+library(rayshader)
+library(magick)
+library(sf)
+
+
+options(rgl.useNULL = TRUE) #MUST RUN before RGL for Rayshader to work.
 library(rgl)
 
+
 load("Hotline_Data_V2.RData")
-
-
 calldetails$num_of_calls <- as.numeric(ave(calldetails$start_date, calldetails$start_date, FUN = length))
 
 
@@ -80,27 +109,27 @@ body <- dashboardBody(
                 
                 h2("Project Goals"),
                 p("Project goals include developing a system for extension that provides:
-                  a) timely analysis of call logs, chats, and emails associated with the helplines;
-                  b) insights about the needs of Iowan's by time, place, and topic;
-                  c) additional infrastructure to support Extension Specialists that work with the helplines."),
+                    a) timely analysis of call logs, chats, and emails associated with the helplines;
+                    b) insights about the needs of Iowan's by time, place, and topic;
+                    c) additional infrastructure to support Extension Specialists that work with the helplines."),
                 
                 h2("Our Approach"),
                 p("- Review current hotline data architecture
-                  - Collect current hotline data as well as other data sources
-                  - Develope Shiny Dashboard application"),
+                     - Collect current hotline data as well as other data sources
+                     - Develope Shiny Dashboard application"),
                 
                 h2("Ethical Considerations"),
                 p("We took the utmost caution when it came to the privacy of our clients data.")
-                )
-    )
-    
+              )
+            )
+            
     ),
     
     tabItem(tabName = 'sentiment',
             fluidRow(
               
               boxPlus(
-                width = 7,
+                width = 9,
                 title = "Sentiment Analysis", 
                 closable = TRUE, 
                 status = "primary", 
@@ -115,20 +144,20 @@ body <- dashboardBody(
                               selected = "6183")
                 ),
                 plotlyOutput(outputId = "lineplot"), style = "height:400px"                   
-                
+
               ),                 p("On the x-axis, the call record shows the timeline of a call. Y-axis shows the average sentiment score of the sentence spoken at that timeframe. 
                                    The orange line represents speaker one while the blue line represents speaker two. 
                                    Together, we can observe the fluctuation in the emotion of the parties that are involved in the call"),
-              br()
+                                 br()
+            
+ 
               
-              
-              
-              ),
+            ),
             
             fluidRow(
               
               boxPlus(
-                width = 7,
+                width = 9,
                 title = "Sentiment Analysis Score Hex", 
                 closable = TRUE, 
                 status = "primary", 
@@ -145,13 +174,13 @@ body <- dashboardBody(
                 plotOutput(outputId = "hexplot"), style = "height:400px"
               ),               p("Hex plots are used to plot sentiment score points on a timeline of a record(x-axis) 
                                  and a sentiment score (vertical axis) in the attempt to show how much the average sentiment score is affected by the timeline of a call"),
-              br()
+                               br()
             ),
             
             fluidRow( #Two Graph Developement
               
               boxPlus(
-                width = 7,
+                width = 9,
                 title = "Sentiment Analysis Score Histograms", 
                 closable = TRUE, 
                 status = "primary", 
@@ -171,31 +200,31 @@ body <- dashboardBody(
                   
                 ),
                 plotlyOutput(outputId = "twoplot"), style = "height:400px"
-              ),               p("The left distribution histogram shows slightly right skewed. X axis is the average sentiment score for the speaker which shows the range of sentiment score values with equal intervals. 
-                                 The height of the histogram is count how many values fall into each interval."),
-              br()
+              ),               p("The X axis shows the average sentiment scores and the Y axis demonstrates the number of sentences that have those scores. 
+                                 The color orange represents speaker 1 and speaker 2 is represented by the color blue."),
+                               br()
             ),
             
             fluidRow(column(11, 
-                            
-                            boxPlus(
-                              width = 7,
-                              title = "Call Transcript", 
-                              closable = TRUE, 
-                              status = "warning", 
-                              solidHeader = TRUE, 
-                              collapsible = TRUE,
-                              enable_sidebar = TRUE,
-                              sidebar_width = 8,
-                              sidebar_start_open = FALSE,
-                              sidebar_content = tagList(
-                                selectInput(inputId = "call_number2", label = strong("Select Log"),
-                                            choices = unique(transcripts$Call_Number),
-                                            selected = "6183")
-                              ),
-                              textOutput("calllog"), style = "height:300px; overflow-y: scroll;")),
-                     
-                     column(1, actionButton( 'play_audio', 'Play Audio' ))
+              
+              boxPlus(
+                width = 10,
+                title = "Call Transcript", 
+                closable = TRUE, 
+                status = "warning", 
+                solidHeader = TRUE, 
+                collapsible = TRUE,
+                enable_sidebar = TRUE,
+                sidebar_width = 8,
+                sidebar_start_open = FALSE,
+                sidebar_content = tagList(
+                  selectInput(inputId = "call_number2", label = strong("Select Log"),
+                              choices = unique(transcripts$Call_Number),
+                              selected = "6183")
+                ),
+                textOutput("calllog"), style = "height:300px; overflow-y: scroll;")),
+              
+              column(1, actionButton( 'play_audio', 'Play Audio' ))
             )
             
             
@@ -206,7 +235,7 @@ body <- dashboardBody(
             fluidRow(
               
               boxPlus(
-                width = 7,
+                width = 8,
                 title = "Distribution of Call Topics by Date", 
                 closable = TRUE, 
                 status = "primary", 
@@ -222,14 +251,15 @@ body <- dashboardBody(
                 ),
                 plotlyOutput(outputId = "output")
               ),
-              p("44444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444"),
-              br()
+                             p("The y axis denotes the call topics while the x axis provides the number of such  calls received. 
+                             The plot data is monthly in nature and call topic counts based on months can be viewed using the drop down located on the sidebar."),
+                             br()
             ),
             
             fluidRow(
               
               boxPlus(
-                width = 7,
+                width = 8,
                 title = "Distribution of Call Outcomes by Date", 
                 closable = TRUE, 
                 status = "primary", 
@@ -244,14 +274,15 @@ body <- dashboardBody(
                               selected = "January")
                 ),
                 plotlyOutput(outputId = "outcome_plot")
-              ),               p("555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555"),
-              br()
+              ),               p("The y axis denotes the call outcomes while the x axis provides the number of such  calls received. 
+                                  The plot data is monthly in nature and call outcome counts based on months can be viewed using the drop down located on the sidebar"),
+                               br()
             ),
             
             fluidRow(
               
               boxPlus(
-                width = 7,
+                width = 8,
                 title = "Distribution of Call Information by Date", 
                 closable = TRUE, 
                 status = "primary", 
@@ -266,14 +297,15 @@ body <- dashboardBody(
                               selected = "January")
                 ),
                 plotlyOutput(outputId = "call_information_plot")
-              ),               p("6666666666666666666666666666666666666666666666666666666666666666666666666666666666666666"),
-              br()
+              ),               p("The y axis denotes the call information obtained while the x axis provides the number of such calls received. 
+                                  The plot data is monthly in nature and call information counts based on months can be viewed using the drop down located on the sidebar."),
+                               br()
             ),
             
             fluidRow(
               
               boxPlus(
-                width = 7,
+                width = 8,
                 title = "Distribution of Referral by Date", 
                 closable = TRUE, 
                 status = "primary", 
@@ -288,14 +320,15 @@ body <- dashboardBody(
                               selected = "January")
                 ),
                 plotlyOutput(outputId = "referral_plot")
-              ),               p("77777777777777777777777777777777777777777777777777777777777777777777777777777777777."),
-              br()
+              ),               p("The y axis denotes the referrals provided while the x axis provides the number of such referrals. 
+                                  The plot data is monthly in nature and referral counts based on months can be viewed using the drop down located on the sidebar."),
+                               br()
             ),
             
             fluidRow(
               
               boxPlus(
-                width = 7,
+                width = 8,
                 title = "Distribution of Web Statistics by Date", 
                 closable = TRUE, 
                 status = "primary", 
@@ -310,14 +343,15 @@ body <- dashboardBody(
                               selected = "January")
                 ),
                 plotlyOutput(outputId = "web_stats_plot")
-              ),                 p("88888888888888888888888888888888888888888888888888888888888888888888888888888888888"),
-              br()
+              ),                 p("The y axis denotes the web statistics generated while the x axis provides the count of the information generated. 
+                                    The plot data is monthly in nature and web statistics based on months can be viewed using the drop down located on the sidebar."),
+                                 br()
             ),
             
             fluidRow(
               
               boxPlus(
-                width = 7,
+                width = 8,
                 title = "Distribution of Brochures by Date", 
                 closable = TRUE, 
                 status = "primary", 
@@ -332,14 +366,15 @@ body <- dashboardBody(
                               selected = "January")
                 ),
                 plotlyOutput(outputId = "brochure_plot")
-              ),               p("9999999999999999999999999999999999999999999999999999999999999999999999999999999999999999"),
-              br()
+              ),               p("The y axis denotes brochure topics while the x axis provides the count of the brochures handed out. 
+                                 The plot data is monthly in nature and counts based on brochure given away can be viewed using the drop down located on the sidebar."),
+                               br()
             ),
             
             fluidRow(
               
               boxPlus(
-                width = 7,
+                width = 8,
                 title = "Statistics", 
                 closable = TRUE, 
                 status = "primary", 
@@ -354,8 +389,10 @@ body <- dashboardBody(
                               selected = "FY2015")
                 ),
                 plotlyOutput(outputId = "stats_plot")
-              ),               p("GRAPHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH 10"),
-              br()
+              ),               p("The x axis denotes the calls received while the x axis provides the month it was received. 
+                                 The plot data is yearly in nature and call counts based on year can be viewed using the drop down located on the sidebar.
+"),
+                               br()
             )
             
     ),
@@ -380,8 +417,10 @@ body <- dashboardBody(
                               selected = "2020")
                 ),
                 plotOutput(outputId = "linex_plot")
-              ),                 p("GRAPHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH 11"),
-              br()
+              ),                 p("The Y-axis is the sum of total time for each call per day. The x-axis is the Date. 
+                                  Each small table represents a month. 
+                                  For example, when you zoom into the first small table,  it shows an increase of total time per day from Jan 15 to Jan 16."),
+                                 br()
             ),
             
             fluidRow(
@@ -403,7 +442,7 @@ body <- dashboardBody(
                 ),
                 plotOutput(outputId = "bubblex_plot")
               ),                   p("GRAPHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH 12"),
-              br()
+                                   br()
             )
             
     ),
@@ -420,32 +459,32 @@ body <- dashboardBody(
             )
             
     ),
-    
-    tabItem(tabName = "bubble3",
+  
+  tabItem(tabName = "bubble3",
+          
+          fluidRow(
             
-            fluidRow(
+            boxPlus(
               
-              boxPlus(
-                
-                width = 12,
-                title = "I-Carol Datasets", 
-                closable = TRUE, 
-                status = "primary", 
-                solidHeader = TRUE, 
-                collapsible = TRUE,
-                enable_sidebar = TRUE,
-                sidebar_width = 10,
-                sidebar_start_open = FALSE,
-                sidebar_content = tagList(
-                  checkboxGroupInput(inputId = "calldata_var", label = strong("Variables to show:"),
-                                     choices = unique(Final$Classification), selected = NULL),
-                  
-                ),
-                plotlyOutput(outputId = "calldata_plot")
-              )
+              width = 12,
+              title = "I-Carol Datasets", 
+              closable = TRUE, 
+             status = "primary", 
+              solidHeader = TRUE, 
+              collapsible = TRUE,
+              enable_sidebar = TRUE,
+              sidebar_width = 10,
+              sidebar_start_open = FALSE,
+              sidebar_content = tagList(
+                checkboxGroupInput(inputId = "calldata_var", label = strong("Variables to show:"),
+                                   choices = unique(Final$Classification), selected = NULL),
+
+              ),
+              plotlyOutput(outputId = "calldata_plot")
             )
-            
-    )
+          )
+          
+          )
     
     )
 )
@@ -532,7 +571,8 @@ server <- function(input, output){
     
     ggplotly(ggplot(filtered_data(), 
                     aes(x = call_record, y = ave_sentiment, color = currently_speaking ))+ 
-               geom_line()+ theme_bw()+ scale_color_manual(values=c("darkorange2", "dodgerblue3"))) #Interactive line Plot
+               geom_line()+ theme_bw()+ scale_color_manual(values=c("darkorange2", "dodgerblue3"))+
+               labs(x = 'Call Records', y = 'Average Sentiment')) #Interactive line Plot
     
     
   })
@@ -542,7 +582,8 @@ server <- function(input, output){
     ggplot(filtered_data5()) +
       geom_hex(aes(y= ave_sentiment, x=call_record,
                    fill=currently_speaking), bins = 50)+
-      facet_wrap(~currently_speaking,ncol=2)+ theme_bw()+ scale_fill_manual(values=c("darkorange2", "dodgerblue3"))
+      facet_wrap(~currently_speaking,ncol=2)+ theme_bw()+ scale_fill_manual(values=c("darkorange2", "dodgerblue3"))+
+      labs(x = 'Call Records', y = 'Average Sentiment')
   })
   
   
@@ -555,13 +596,15 @@ server <- function(input, output){
       filtered_data6() %>%
         ggplot() +
         geom_histogram(aes(x=ave_sentiment, fill=currently_speaking))+
-        facet_wrap(~currently_speaking,ncol=2)+ theme_bw()+ scale_fill_manual(values=c("darkorange2", "dodgerblue3"))
+        facet_wrap(~currently_speaking,ncol=2)+ theme_bw()+ scale_fill_manual(values=c("darkorange2", "dodgerblue3"))+
+        labs(x = 'Average Sentiment', y = 'Count')
     }
     else {
       filtered_data6() %>%
         ggplot() +
         geom_histogram(aes(x= ave_sentiment_dup,fill=currently_speaking), 
-                       colour="grey50", alpha=0.5, position="identity")+ theme_bw()+ scale_fill_manual(values=c("darkorange2", "dodgerblue3"))
+                       colour="grey50", alpha=0.5, position="identity")+ theme_bw()+ scale_fill_manual(values=c("darkorange2", "dodgerblue3"))+
+        labs(y = 'Count', x = "Average Sentiment")
     }
     
   })
@@ -662,14 +705,14 @@ server <- function(input, output){
       group_by(day,month, year, Total_Time,num_of_calls )%>%
       summarise(sumTotalTime = sum(Total_Time)) %>%
       filter(year == 2020) 
-    
+      
     plot_ly(graph, x=~day, y=~num_of_calls, 
-            z=~Total_Time,
-            text=~Total_Time,
-            color = ~month,
-            mode = 'markers',
-            type='scatter3d')
-    
+              z=~Total_Time,
+              text=~Total_Time,
+              color = ~month,
+              mode = 'markers',
+              type='scatter3d')
+  
     
   })
   
@@ -686,7 +729,7 @@ server <- function(input, output){
   
   
   #observeEvent(input$beep, {
-  #js$beep()
+    #js$beep()
   #})
   
   
