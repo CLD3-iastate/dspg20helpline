@@ -1,6 +1,6 @@
 #Load required Packages
 
-
+setwd("C:/Users/dgthomas/Downloads/hotline-AM_shinydev (4)/hotline-AM_shinydev/speech_to_text")
 
 #packages <- c("dplyr", "purrr", "stringr", "readxl",
  #             "magrittr", "stringr")
@@ -105,18 +105,20 @@ body <- dashboardBody(
                 h1("2020 DSPG Hotline"),
                 
                 h2("Project Description"),
-                p("Create an analytic strategy that maximizes the actionable insights yielded from the hotline data."),
+                p("The Hotline system enables the citizens of Iowa to make direct contact with scientific and educational support. We have created an analytic strategy that maximizes the actionable insights yielded from the hotline data."),
                 
                 h2("Project Goals"),
-                p("Project goals include developing a system for extension that provides:
-                    a) timely analysis of call logs, chats, and emails associated with the helplines;
-                    b) insights about the needs of Iowan's by time, place, and topic;
-                    c) additional infrastructure to support Extension Specialists that work with the helplines."),
+                p("Project goals include developing a system for extension that provides:"),
+					p("a) Implement sentiment analysis using recorded voice chats"),
+                    p("b) Timely analysis of call logs associated with the helplines"),
+                    p("c) Insights about the needs of Iowan's by time, place, and topic"),
+                    p("d) Additional infrastructure to support Extension Specialists that work with the helplines."),
                 
                 h2("Our Approach"),
-                p("- Review current hotline data architecture
-                     - Collect current hotline data as well as other data sources
-                     - Develope Shiny Dashboard application"),
+                p("Review current hotline data architecture"),
+                     p("a) Collect current hotline data as well as other data sources"),
+                     p("b) Develope Shiny Dashboard application"),
+					 p("c) Get information and feedback from Hotline Personnel"),
                 
                 h2("Ethical Considerations"),
                 p("We took the utmost caution when it came to the privacy of our clients data.")
@@ -236,7 +238,7 @@ body <- dashboardBody(
               
               boxPlus(
                 width = 8,
-                title = "Distribution of Call Topics by Date", 
+                title = "Distribution of Call Topics", 
                 closable = TRUE, 
                 status = "primary", 
                 solidHeader = TRUE, 
@@ -260,7 +262,7 @@ body <- dashboardBody(
               
               boxPlus(
                 width = 8,
-                title = "Distribution of Call Outcomes by Date", 
+                title = "Distribution of Call Outcomes", 
                 closable = TRUE, 
                 status = "primary", 
                 solidHeader = TRUE, 
@@ -283,7 +285,7 @@ body <- dashboardBody(
               
               boxPlus(
                 width = 8,
-                title = "Distribution of Call Information by Date", 
+                title = "Distribution of Call Information", 
                 closable = TRUE, 
                 status = "primary", 
                 solidHeader = TRUE, 
@@ -306,7 +308,7 @@ body <- dashboardBody(
               
               boxPlus(
                 width = 8,
-                title = "Distribution of Referral by Date", 
+                title = "Distribution of Referral", 
                 closable = TRUE, 
                 status = "primary", 
                 solidHeader = TRUE, 
@@ -325,28 +327,7 @@ body <- dashboardBody(
                                br()
             ),
             
-            fluidRow(
-              
-              boxPlus(
-                width = 8,
-                title = "Distribution of Web Statistics by Date", 
-                closable = TRUE, 
-                status = "primary", 
-                solidHeader = TRUE, 
-                collapsible = TRUE,
-                enable_sidebar = TRUE,
-                sidebar_width = 10,
-                sidebar_start_open = FALSE,
-                sidebar_content = tagList(
-                  selectInput(inputId = "month5", label = strong("Select a Month or Annual Report"),
-                              choices = unique(web_stats_Long$Month_and_Annual),
-                              selected = "January")
-                ),
-                plotlyOutput(outputId = "web_stats_plot")
-              ),                 p("The y axis denotes the web statistics generated while the x axis provides the count of the information generated. 
-                                    The plot data is monthly in nature and web statistics based on months can be viewed using the drop down located on the sidebar."),
-                                 br()
-            ),
+         
             
             fluidRow(
               
@@ -623,48 +604,59 @@ server <- function(input, output){
     ggplotly(ggplot(filtered_data3(), aes(x = Topic, y = Number_of_Cases)) +
                geom_bar(stat = "identity", fill = "darkorange2") +
                coord_flip() + 
-               theme(legend.position = "top")+ theme_bw()) #Interactive Bar Chart 
+               theme(legend.position = "top")+ theme_bw() +
+      labs(y = 'Call Count', x = "Topic"))#Interactive Bar Chart 
   })
   
   output$outcome_plot <- renderPlotly({
     ggplotly(ggplot(filtered_data4(), aes(x = Outcome, y = Number_of_Cases )) +
                geom_bar(stat = "identity", fill = "darkorange2") +
                coord_flip() + 
-               theme(legend.position = "top")+ theme_bw()) #Interactive Bar Chart
+               theme(legend.position = "top")+ theme_bw() + #Interactive Bar Chart
+               labs(y = 'Call Count', x = "Call Outcome"))
   })
   
   output$call_information_plot <- renderPlotly({
     ggplotly(ggplot(filtered_data7(), aes(x = information, y = Number_of_Cases )) +
                geom_bar(stat = "identity", fill = "darkorange2") +
                coord_flip() + 
-               theme(legend.position = "top")+ theme_bw()) #Interactive Bar Chart
+               theme(legend.position = "top")+ theme_bw() +#Interactive Bar Chart
+               labs(y = 'Call Count', x = "Call Information"))
   })
   
   output$referral_plot <- renderPlotly({
     ggplotly(ggplot(filtered_data8(), aes(x = Referral, y = Number_of_Cases )) +
                geom_bar(stat = "identity", fill = "darkorange2") +
                coord_flip() + 
-               theme(legend.position = "top")+ theme_bw()) #Interactive Bar Chart
+               theme(legend.position = "top")+ theme_bw() + #Interactive Bar Chart
+               labs(y = 'Call Count', x = "Referral")
+             )
   })
   
-  output$web_stats_plot <- renderPlotly({
-    ggplotly(ggplot(filtered_data9(), aes(x = information, y = Number_of_Cases )) +
-               geom_bar(stat = "identity", fill = "darkorange2") +
-               coord_flip() + 
-               theme(legend.position = "top")+ theme_bw()) #Interactive Bar Chart
-  })
+  # output$web_stats_plot <- renderPlotly({
+  #   ggplotly(ggplot(filtered_data9(), aes(x = information, y = Number_of_Cases )) +
+  #              geom_bar(stat = "identity", fill = "darkorange2") +
+  #              coord_flip() + 
+  #              theme(legend.position = "top")+ theme_bw() + #Interactive Bar Chart
+  #              labs(y = 'Call Count', x = "Referral")
+  #   )
+  # })
   
   output$brochure_plot <- renderPlotly({
     ggplotly(ggplot(filtered_data10(), aes(x = information, y = Number_of_Cases )) +
                geom_bar(stat = "identity", fill = "darkorange2") +
                coord_flip() + 
-               theme(legend.position = "top")+ theme_bw()) #Interactive Bar Chart
+               theme(legend.position = "top")+ theme_bw() + #Interactive Bar Chart
+               labs(y = 'Call Count', x = "Brochures")
+    )
   })
   output$stats_plot <- renderPlotly({
     ggplotly(ggplot(filtered_data11(), aes(x = Months, y = Number_of_Cases )) +
                geom_bar(stat = "identity", fill = "darkorange2") +
                coord_flip() + 
-               theme(legend.position = "top")+ theme_bw()) #Interactive Bar Chart
+               theme(legend.position = "top")+ theme_bw() + #Interactive Bar Chart
+               labs(y = 'Call Count', x = "Months")
+    )
   })
   
   output$linex_plot <- renderPlot({
