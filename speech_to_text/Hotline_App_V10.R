@@ -61,7 +61,7 @@ library(viridisLite)
 library(rayshader)
 library(magick)
 library(sf)
-library(wesanderson)
+
 
 
 
@@ -620,8 +620,8 @@ server <- function(input, output){
                     aes(x = call_record, y = ave_sentiment, color = currently_speaking ))+ 
                geom_line()+ theme_bw()+ scale_color_manual(values=c("darkorange2", "dodgerblue3"))+
                labs(x = 'Call Duration (Sentences)', y = 'Average Sentiment'))
-                
-     
+    
+    
     
     
   })
@@ -780,14 +780,14 @@ server <- function(input, output){
         theme_bw()
     }
     else {
-      pal <- wes_palette("Zissou1", type = "continuous")
+      
       
       ggplot() +
         geom_sf(data = iowa, aes(fill = log(n)))+
         geom_sf(data = iowa2, aes(fill = log(n)))+
-        scale_fill_gradientn(colours = pal) + 
-        scale_x_discrete(expand = c(0, 0)) +
-        scale_y_discrete(expand = c(0, 0)) + 
+        scale_x_continuous(expand=c(0,0)) +
+        scale_y_continuous(expand=c(0,0)) +
+        scale_fill_gradient(low="gold", high="pink")+ 
         ggtitle(" ")+
         labs(fill = "Number of Calls")+
         theme_bw()
