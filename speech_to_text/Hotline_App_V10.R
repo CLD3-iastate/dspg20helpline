@@ -1,6 +1,6 @@
 #Load required Packages
 
-setwd("C:/Users/dgthomas/Downloads/hotline-AM_shinydev (4)/hotline-AM_shinydev/speech_to_text")
+
 
 #packages <- c("dplyr", "purrr", "stringr", "readxl",
 #             "magrittr", "stringr")
@@ -61,6 +61,9 @@ library(viridisLite)
 library(rayshader)
 library(magick)
 library(sf)
+library(wesanderson)
+
+install.packages("wesanderson")
 
 
 options(rgl.useNULL = TRUE) #MUST RUN before RGL for Rayshader to work.
@@ -81,7 +84,7 @@ load("Hotline_Data_V2.RData")
 # levels(Final$Classification)[levels(Final$Classification)=="CCT"] <- "211 Call Transfer"
 
 # Final <- plyr::revalue(Final$CCT, c("old_name" = "New_Name")
-              
+
 # calldetails$num_of_calls <- as.numeric(ave(calldetails$start_date, calldetails$start_date, FUN = length))
 # 
 # 
@@ -132,7 +135,7 @@ sidebar <- dashboardSidebar(
     
     menuItem("Project Description", icon = icon("diagnoses"), tabName = "description"),
     menuItem("Sentiment Analysis", icon = icon("diagnoses"), tabName = 'sentiment'),
-    menuItem("Call information Panel", icon = icon("bar-chart-o"), tabName = "bar"),
+    menuItem("Call information Report", icon = icon("bar-chart-o"), tabName = "bar"),
     menuItem("Nice Data", icon = icon("bar-chart-o"),
              menuSubItem("Call Information",icon = icon("angle-right"), tabName = "bubble1")),
     menuItem("ICarol Data", icon = icon("bar-chart-o"), tabName = "bubble3")
@@ -435,8 +438,8 @@ body <- dashboardBody(
             fluidRow(
               
               boxPlus(
-                width = 7,
-                title = "Statistics", 
+                width = 9,
+                title = "Number of Call per each call center", 
                 closable = TRUE, 
                 status = "primary", 
                 solidHeader = TRUE, 
@@ -458,8 +461,8 @@ body <- dashboardBody(
             fluidRow(
               
               boxPlus(
-                width = 7,
-                title = "Statistics", 
+                width = 9,
+                title = "Number of Calls and Total Call Time by Date", 
                 closable = TRUE, 
                 status = "primary", 
                 solidHeader = TRUE, 
@@ -480,8 +483,8 @@ body <- dashboardBody(
             fluidRow(
               
               boxPlus(
-                width = 7,
-                title = "Statistics", 
+                width = 9,
+                title = "Number of Calls by Area Code", 
                 closable = TRUE, 
                 status = "primary", 
                 solidHeader = TRUE, 
@@ -490,16 +493,20 @@ body <- dashboardBody(
                 sidebar_width = 10,
                 sidebar_start_open = FALSE,
                 sidebar_content = tagList(
-               
+                  
+                  selectInput(inputId = "valuex", label = strong("Select Graph Scale Type"),
+                              choices = c("Numeric", "Log Scale"),
+                              selected = NULL, multiple = FALSE, selectize = TRUE)
+                  
                 ),
                 plotOutput(outputId = "MAPPlot")
-              ),                   p("Area Code Maps"),
+              ),                   p("This map shows the number of calls by area code throughout the state of Iowa."),
               br()
             )
             
     ),
     
-   
+    
     
     tabItem(tabName = "bubble3",
             
@@ -735,7 +742,7 @@ server <- function(input, output){
               color = ~skill_name,
               marker = list( opacity = 0.5, sizemode ='diameter'))%>% 
       layout(
-        title = "Number of Call per each call center",
+        title = " ",
         xaxis = list(title = "Date"),
         yaxis = list(title = "Total number of call")
       )
@@ -752,7 +759,7 @@ server <- function(input, output){
               size = ~sumTT,
               marker = list( opacity = 0.5, sizemode ='diameter'))%>% 
       layout(
-        title = "Number of Calls and Total Call Time by Date",
+        title = " ",
         xaxis = list(title = "Date"),
         yaxis = list(title = "Total number of call")
       )
@@ -761,12 +768,31 @@ server <- function(input, output){
   
   output$MAPPlot <-  renderPlot({
     
-    ggplot() +
-      geom_sf(data = iowa, aes(fill = n))+
-      geom_sf(data = iowa2, aes(fill = n))+
-      scale_fill_viridis_c(option = "plasma")
     
-  
+    if (input$valuex == "Numeric"){
+      ggplot() +
+        geom_sf(data = iowa, aes(fill = n))+
+        geom_sf(data = iowa2, aes(fill = n))+
+        
+        ggtitle(" ")+
+        labs(fill = "Number of Calls")+
+        theme_bw()
+    }
+    else {
+      pal <- wes_palette("Zissou1", type = "continuous")
+      
+      ggplot() +
+        geom_sf(data = iowa, aes(fill = log(n)))+
+        geom_sf(data = iowa2, aes(fill = log(n)))+
+        scale_fill_gradientn(colours = pal) + 
+        scale_x_discrete(expand = c(0, 0)) +
+        scale_y_discrete(expand = c(0, 0)) + 
+        ggtitle(" ")+
+        labs(fill = "Number of Calls")+
+        theme_bw()
+    }
+    
+    
     
   })
   
