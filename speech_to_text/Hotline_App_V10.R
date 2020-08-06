@@ -68,45 +68,59 @@ library(rgl)
 
 
 load("Hotline_Data_V2.RData")
-calldetails$num_of_calls <- as.numeric(ave(calldetails$start_date, calldetails$start_date, FUN = length))
+# call_information_Long  = drop_na(call_information_Long)
+# brochure_Long = drop_na(brochure_Long)
+# stats_Long = drop_na(stats_Long)
+# call_information_Long = dplyr::rename(call_information_Long, "Call Counts" = Number_of_Cases)
+# brochure_Long = dplyr::rename(brochure_Long, "Call Counts" = Number_of_Cases)
+# stats_Long = dplyr::rename(stats_Long, "Call Counts" = Number_of_Cases)
+# Tammy_Data_Long = dplyr::rename(Tammy_Data_Long, "Call Counts" = Number_of_Cases)
+# Outcome_Data_Long = dplyr::rename(Outcome_Data_Long, "Call Counts" = Number_of_Cases)
+# referral_Long = dplyr::rename(referral_Long, "Call Counts" = Number_of_Cases)
+# Final = drop_na(Final)
+# levels(Final$Classification)[levels(Final$Classification)=="CCT"] <- "211 Call Transfer"
 
-
-
-#--------------------------------------------------------------------------------------------------------------------------------#
-
-
-calldetails_180 <- read_csv("calldetail0713_TotalTime-180max.csv")
-
-
-
-
-
-cols <- c(1,4,8,17,24)
-cd_180_1<- calldetails_180[, cols]
-
-# Create a new column named number of calls
-cd_180_1$num_of_calls <- as.numeric(ave(cd_180_1$start_date, cd_180_1$start_date, FUN = length))
-
-
-bx <- cd_180_1 %>% 
-  separate('start_date', into = c("month","day","year"))
-
-
-bx$day <- as.factor(bx$day)
-bx$day <- as.numeric(bx$day)
-bx$month <- as.numeric(bx$month)
-bx$year <- as.numeric(bx$year)
-
-
-bbx <- bx %>%
-  filter(year == 2020) %>%
-  group_by(day, month,num_of_calls) %>%
-  summarise(sumTT = sum(Total_Time_180max))
-
-
-
-
-
+# Final <- plyr::revalue(Final$CCT, c("old_name" = "New_Name")
+              
+# calldetails$num_of_calls <- as.numeric(ave(calldetails$start_date, calldetails$start_date, FUN = length))
+# 
+# 
+# 
+# #--------------------------------------------------------------------------------------------------------------------------------#
+# 
+# 
+# calldetails_180 <- read_csv("calldetail0713_TotalTime-180max.csv")
+# 
+# 
+# 
+# 
+# 
+# cols <- c(1,4,8,17,24)
+# cd_180_1<- calldetails_180[, cols]
+# 
+# # Create a new column named number of calls
+# cd_180_1$num_of_calls <- as.numeric(ave(cd_180_1$start_date, cd_180_1$start_date, FUN = length))
+# 
+# 
+# bx <- cd_180_1 %>% 
+#   separate('start_date', into = c("month","day","year"))
+# 
+# 
+# bx$day <- as.factor(bx$day)
+# bx$day <- as.numeric(bx$day)
+# bx$month <- as.numeric(bx$month)
+# bx$year <- as.numeric(bx$year)
+# 
+# 
+# bbx <- bx %>%
+#   filter(year == 2020) %>%
+#   group_by(day, month,num_of_calls) %>%
+#   summarise(sumTT = sum(Total_Time_180max))
+# 
+# 
+# 
+# 
+# 
 #------------------------------------------------------------------------------------------------------------------------------#
 
 
@@ -120,8 +134,7 @@ sidebar <- dashboardSidebar(
     menuItem("Sentiment Analysis", icon = icon("diagnoses"), tabName = 'sentiment'),
     menuItem("Call information Panel", icon = icon("bar-chart-o"), tabName = "bar"),
     menuItem("Nice Data", icon = icon("bar-chart-o"),
-             menuSubItem("Call Information",icon = icon("angle-right"), tabName = "bubble1"),
-             menuSubItem("3D Plots", icon = icon("angle-right"), tabName = "bubble2")),
+             menuSubItem("Call Information",icon = icon("angle-right"), tabName = "bubble1")),
     menuItem("ICarol Data", icon = icon("bar-chart-o"), tabName = "bubble3")
     
   )
@@ -372,7 +385,7 @@ body <- dashboardBody(
               
               boxPlus(
                 width = 8,
-                title = "Distribution of Brochures by Date", 
+                title = "Distribution of Brochures", 
                 closable = TRUE, 
                 status = "primary", 
                 solidHeader = TRUE, 
@@ -463,22 +476,30 @@ body <- dashboardBody(
               ),                   p("Y-axis is the total number of calls per each day. x - axis represents the date. The bubble size refers to the sum of total call time by day.  
                                      For example, on the January 2nd, hotline center received 157 calls and total time spent for the day is longer than the January 1st."),
               br()
+            ),
+            fluidRow(
+              
+              boxPlus(
+                width = 7,
+                title = "Statistics", 
+                closable = TRUE, 
+                status = "primary", 
+                solidHeader = TRUE, 
+                collapsible = TRUE,
+                enable_sidebar = TRUE,
+                sidebar_width = 10,
+                sidebar_start_open = FALSE,
+                sidebar_content = tagList(
+               
+                ),
+                plotOutput(outputId = "MAPPlot")
+              ),                   p("Area Code Maps"),
+              br()
             )
             
     ),
     
-    tabItem(tabName = "bubble2",
-            
-            fluidRow(
-              
-              column(5,
-                     rglwidgetOutput("MAPPlot")),
-              
-              column(5,
-                     plotlyOutput("dscat"))
-            )
-            
-    ),
+   
     
     tabItem(tabName = "bubble3",
             
@@ -487,7 +508,7 @@ body <- dashboardBody(
               boxPlus(
                 
                 width = 12,
-                title = "I-Carol Datasets", 
+                title = "Call Type (I - Carol)", 
                 closable = TRUE, 
                 status = "primary", 
                 solidHeader = TRUE, 
@@ -640,7 +661,7 @@ server <- function(input, output){
   
   
   output$output <- renderPlotly({
-    ggplotly(ggplot(filtered_data3(), aes(x = Topic, y = Number_of_Cases)) +
+    ggplotly(ggplot(filtered_data3(), aes(x = Topic, y = `Call Counts`)) +
                geom_bar(stat = "identity", fill = "darkorange2") +
                coord_flip() + 
                theme(legend.position = "top")+ theme_bw() +
@@ -648,7 +669,7 @@ server <- function(input, output){
   })
   
   output$outcome_plot <- renderPlotly({
-    ggplotly(ggplot(filtered_data4(), aes(x = Outcome, y = Number_of_Cases )) +
+    ggplotly(ggplot(filtered_data4(), aes(x = Outcome, y = `Call Counts` )) +
                geom_bar(stat = "identity", fill = "darkorange2") +
                coord_flip() + 
                theme(legend.position = "top")+ theme_bw() + #Interactive Bar Chart
@@ -656,7 +677,7 @@ server <- function(input, output){
   })
   
   output$call_information_plot <- renderPlotly({
-    ggplotly(ggplot(filtered_data7(), aes(x = information, y = Number_of_Cases )) +
+    ggplotly(ggplot(filtered_data7(), aes(x = information, y = `Call Counts` )) +
                geom_bar(stat = "identity", fill = "darkorange2") +
                coord_flip() + 
                theme(legend.position = "top")+ theme_bw() +#Interactive Bar Chart
@@ -664,7 +685,7 @@ server <- function(input, output){
   })
   
   output$referral_plot <- renderPlotly({
-    ggplotly(ggplot(filtered_data8(), aes(x = Referral, y = Number_of_Cases )) +
+    ggplotly(ggplot(filtered_data8(), aes(x = Referral, y = `Call Counts` )) +
                geom_bar(stat = "identity", fill = "darkorange2") +
                coord_flip() + 
                theme(legend.position = "top")+ theme_bw() + #Interactive Bar Chart
@@ -682,7 +703,7 @@ server <- function(input, output){
   # })
   
   output$brochure_plot <- renderPlotly({
-    ggplotly(ggplot(filtered_data10(), aes(x = information, y = Number_of_Cases )) +
+    ggplotly(ggplot(filtered_data10(), aes(x = information, y = `Call Counts`)) +
                geom_bar(stat = "identity", fill = "darkorange2") +
                coord_flip() + 
                theme(legend.position = "top")+ theme_bw() + #Interactive Bar Chart
@@ -690,7 +711,7 @@ server <- function(input, output){
     )
   })
   output$stats_plot <- renderPlotly({
-    ggplotly(ggplot(filtered_data11(), aes(x = Months, y = Number_of_Cases )) +
+    ggplotly(ggplot(filtered_data11(), aes(x = Months, y = `Call Counts` )) +
                geom_bar(stat = "identity", fill = "darkorange2") +
                coord_flip() + 
                theme(legend.position = "top")+ theme_bw() + #Interactive Bar Chart
@@ -738,15 +759,14 @@ server <- function(input, output){
     
   })
   
-  output$MAPPlot <-  renderRglwidget({
+  output$MAPPlot <-  renderPlot({
     
-    gg2 <- ggplot() +
+    ggplot() +
       geom_sf(data = iowa, aes(fill = n))+
       geom_sf(data = iowa2, aes(fill = n))+
       scale_fill_viridis_c(option = "plasma")
     
-    plot_gg(gg2, width = 5, height = 3, scale = 300, multicore = TRUE, windowsize = c(500, 500))
-    rglwidget()
+  
     
   })
   
