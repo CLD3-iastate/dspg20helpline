@@ -63,7 +63,6 @@ library(magick)
 library(sf)
 library(wesanderson)
 
-install.packages("wesanderson")
 
 
 options(rgl.useNULL = TRUE) #MUST RUN before RGL for Rayshader to work.
@@ -620,7 +619,9 @@ server <- function(input, output){
     ggplotly(ggplot(filtered_data(), 
                     aes(x = call_record, y = ave_sentiment, color = currently_speaking ))+ 
                geom_line()+ theme_bw()+ scale_color_manual(values=c("darkorange2", "dodgerblue3"))+
-               labs(x = 'Call Records', y = 'Average Sentiment')) #Interactive line Plot
+               labs(x = 'Call Duration (Sentences)', y = 'Average Sentiment'))
+                
+     
     
     
   })
@@ -631,7 +632,7 @@ server <- function(input, output){
       geom_hex(aes(y= ave_sentiment, x=call_record,
                    fill=currently_speaking), bins = 50)+
       facet_wrap(~currently_speaking,ncol=2)+ theme_bw()+ scale_fill_manual(values=c("darkorange2", "dodgerblue3"))+
-      labs(x = 'Call Records', y = 'Average Sentiment')
+      labs(x = 'Call Duration (Sentences)', y = 'Average Sentiment')
   })
   
   
@@ -645,14 +646,14 @@ server <- function(input, output){
         ggplot() +
         geom_histogram(aes(x=ave_sentiment, fill=currently_speaking))+
         facet_wrap(~currently_speaking,ncol=2)+ theme_bw()+ scale_fill_manual(values=c("darkorange2", "dodgerblue3"))+
-        labs(x = 'Average Sentiment', y = 'Count')
+        labs(x = 'Sentiment Score', y = 'Frequency of Sentences')
     }
     else {
       filtered_data6() %>%
         ggplot() +
         geom_histogram(aes(x= ave_sentiment_dup,fill=currently_speaking), 
                        colour="grey50", alpha=0.5, position="identity")+ theme_bw()+ scale_fill_manual(values=c("darkorange2", "dodgerblue3"))+
-        labs(y = 'Count', x = "Average Sentiment")
+        labs(y = 'Frequency of Sentences', x = "Sentiment Score")
     }
     
   })
