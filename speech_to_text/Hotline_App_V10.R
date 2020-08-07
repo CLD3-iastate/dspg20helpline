@@ -453,8 +453,12 @@ body <- dashboardBody(
                 sidebar_start_open = FALSE,
                 sidebar_content = tagList(
                   selectInput(inputId = "yearx", label = strong("Year"),
-                              choices = unique(c$year),
-                              selected = "2020")
+                              choices = unique(bx$year),
+                              selected = "2020"),
+                  
+                  selectInput(inputId = "monthx", label = strong("Month"),
+                              choices = unique(bx$month),
+                              selected = "1")
                 ),
                 plotlyOutput(outputId = "linex_plot")
               ),                 p("X- axis represents date of each hotlines. Y-axis represents number of calls received by each hotline. 
@@ -499,7 +503,7 @@ body <- dashboardBody(
                 sidebar_content = tagList(
                   
                   selectInput(inputId = "valuex", label = strong("Select Graph Scale Type"),
-                              choices = c("Numeric", "Log Scale"),
+                              choices = c("Numeric", "Log Scale", "Square Root", "Reverse"),
                               selected = NULL, multiple = FALSE, selectize = TRUE)
                   
                 ),
@@ -622,7 +626,13 @@ server <- function(input, output){
   
   
   filtered_data12 <- reactive({
-    filter(c, year == input$yearx)
+    
+    bx$num_of_line <- as.numeric(ave(bx$skill_name, bx$skill_name, FUN = length))
+    bx$day <-as.numeric(bx$day)
+    bx<-subset(bx, skill_name!="Cheryl Clarke" & skill_name!="211 VM")
+    
+    filter(bx, year == input$yearx,
+               month == input$monthx)
   })
   
   filtered_data13 <- reactive({
@@ -749,10 +759,10 @@ server <- function(input, output){
   
   output$linex_plot <- renderPlotly({
     
-    bx$num_of_line <- as.numeric(ave(bx$skill_name, bx$skill_name, FUN = length))
-    bx$day <-as.numeric(bx$day)
-    bbx<-subset(bx, skill_name!="Cheryl Clarke" & skill_name!="211 VM")
-    bbx %>%
+    #bx$num_of_line <- as.numeric(ave(bx$skill_name, bx$skill_name, FUN = length))
+    #bx$day <-as.numeric(bx$day)
+    #bx<-subset(bx, skill_name!="Cheryl Clarke" & skill_name!="211 VM")
+    filtered_data12()%>%
       group_by(day, month, year,skill_name) %>%
       count(skill_name)%>%
       ungroup() %>%
@@ -784,6 +794,7 @@ server <- function(input, output){
     
   })
   
+
   output$MAPPlot <-  renderPlot({
     
     
@@ -796,7 +807,7 @@ server <- function(input, output){
         labs(fill = "Number of Calls")+
         theme_bw()
     }
-    else {
+    else if(input$valuex == "Log Scale") {
       
       
       ggplot() +
@@ -804,10 +815,37 @@ server <- function(input, output){
         geom_sf(data = iowa2, aes(fill = log(n)))+
         scale_x_continuous(expand=c(0,0)) +
         scale_y_continuous(expand=c(0,0)) +
-        scale_fill_gradient(low="gold", high="pink")+ 
+        scale_fill_gradient(low="gold", high="deepskyblue3")+ 
         ggtitle(" ")+
         labs(fill = "Number of Calls")+
         theme_bw()
+    }
+    
+    else if(input$valuex == "Square Root"){
+      ggplot() +
+        geom_sf(data = iowa, aes(fill = sqrt(n)))+
+        geom_sf(data = iowa2, aes(fill = sqrt(n)))+
+        scale_x_continuous(expand=c(0,0)) +
+        scale_y_continuous(expand=c(0,0)) +
+        scale_fill_gradient(low="gold", high="deepskyblue3")+ 
+        ggtitle(" ")+
+        labs(fill = "Number of Calls")+
+        theme_bw()
+      
+    }
+    
+    else{
+      
+      ggplot() +
+        geom_sf(data = iowa, aes(fill = (-n)))+
+        geom_sf(data = iowa2, aes(fill = (-n)))+
+        scale_x_continuous(expand=c(0,0)) +
+        scale_y_continuous(expand=c(0,0)) +
+        scale_fill_gradient(low="gold", high="deepskyblue3")+ 
+        ggtitle(" ")+
+        labs(fill = "Number of Calls")+
+        theme_bw()
+      
     }
     
     
