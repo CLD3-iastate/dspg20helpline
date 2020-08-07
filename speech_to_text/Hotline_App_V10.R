@@ -137,7 +137,12 @@ sidebar <- dashboardSidebar(
     menuItem("Call information Report", icon = icon("bar-chart-o"), tabName = "bar"),
     menuItem("Nice Data", icon = icon("bar-chart-o"),
              menuSubItem("Call Information",icon = icon("angle-right"), tabName = "bubble1")),
-    menuItem("ICarol Data", icon = icon("bar-chart-o"), tabName = "bubble3")
+    menuItem("ICarol Data", icon = icon("bar-chart-o"), tabName = "bubble3"),
+    menuItem(
+      tabName = "team",
+      text = "Team",
+      icon = icon("user-friends")
+    )
     
   )
   
@@ -470,9 +475,9 @@ body <- dashboardBody(
                 sidebar_width = 10,
                 sidebar_start_open = FALSE,
                 sidebar_content = tagList(
-                  selectInput(inputId = "yearx2", label = strong("Year"),
-                              choices = unique(d$year),
-                              selected = "2020")
+                  selectInput(inputId = "monthx2", label = strong("Month"),
+                              choices = unique(bbx$month),
+                              selected = "1")
                 ),
                 plotlyOutput(outputId = "bubblex_plot")
               ),                   p("Y-axis is the total number of calls per each day. x - axis represents the date. The bubble size refers to the sum of total call time by day.  
@@ -524,14 +529,29 @@ body <- dashboardBody(
                 sidebar_start_open = FALSE,
                 sidebar_content = tagList(
                   checkboxGroupInput(inputId = "calldata_var", label = strong("Variables to show:"),
-                                     choices = unique(Final$Classification), selected = NULL),
+                                     choices = unique(Final$Classification), selected = NULL)
                   
                 ),
                 plotlyOutput(outputId = "calldata_plot")
-              )
+              ),p("This plot allows you to focus on you a specific interval of time (on the x axis), while viewing call counts (on the y axis). The user can also toggle through different call topics.")
             )
             
-    )
+    ),
+    tabItem(tabName = "team",
+            fluidRow(
+              boxPlus(
+                title = "Findings",
+                closable = FALSE,
+                width = NULL,
+                status = "warning",
+                solidHeader = TRUE,
+                collapsible = TRUE,
+                h4("Fellow - Deepak George Thomas"),h4("Interns - Andrew Maloney, Kok Kent Chong, Xinyi Zhu"),
+                h4("Team leaders - Adisak Sukul, Shawn Dorius"),
+                #h3("UVA SDAD Team Members"),
+                h4("Project Sponsors - Cooperative Extension Helplines")
+              )
+            ))
     
   )
 )
@@ -606,7 +626,7 @@ server <- function(input, output){
   })
   
   filtered_data13 <- reactive({
-    filter(d, year == input$yearx2)
+    filter(bbx, month == input$monthx2)
   })
   
   filtered_data14 <-reactive({
@@ -734,7 +754,6 @@ server <- function(input, output){
     bbx<-subset(bx, skill_name!="Cheryl Clarke" & skill_name!="211 VM")
     bbx %>%
       group_by(day, month, year,skill_name) %>%
-      filter(year == 2020 & month == 1) %>%
       count(skill_name)%>%
       ungroup() %>%
       plot_ly(x = ~day, y = ~n, 
@@ -751,9 +770,7 @@ server <- function(input, output){
   })
   
   output$bubblex_plot <- renderPlotly({
-    bbx %>%
-      filter(month == 1) %>%
-      ungroup() %>%
+    filtered_data13() %>%
       plot_ly(x = ~day, y = ~num_of_calls, 
               type = 'scatter', 
               mode = 'makers', 
