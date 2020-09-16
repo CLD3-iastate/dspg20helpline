@@ -61,7 +61,31 @@ library(viridisLite)
 library(rayshader)
 library(magick)
 library(sf)
+jscode <- "var referer = document.referrer;
 
+           var n = referer.includes('economic');
+
+           var x = document.getElementsByClassName('logo');
+
+           if (n != true) {
+
+             x[0].innerHTML = '<a href=\"https://datascienceforthepublicgood.org/events/symposium2020/poster-sessions\">' +
+
+                              '<img src=\"DSPG_white-01.png\", alt=\"DSPG 2020 Symposium Proceedings\", style=\"height:42px;\">' +
+
+                             '</a>';
+
+           } else {
+
+             x[0].innerHTML = '<a href=\"https://datascienceforthepublicgood.org/economic-mobility/community-insights\">' +
+
+                              '<img src=\"AEMLogoGatesColors-11.png\", alt=\"Gates Economic Mobility Case Studies\", style=\"height:42px;\">' +
+
+                              '</a>';
+
+           }
+
+           "
 
 
 
@@ -151,6 +175,7 @@ sidebar <- dashboardSidebar(
 #--------------------------------------------------------------------------------------------------------------#
 
 body <- dashboardBody(
+  useShinyjs(),
   tabItems(
     tabItem(tabName = "description",
             fluidRow(
@@ -574,7 +599,7 @@ ui <- dashboardPage(
 #---------------------------------------------------------------------------#
 
 server <- function(input, output){
-  
+  runjs(jscode)
   
   filtered_data <- reactive({
     filter(completex, Call_Number == input$call_number ) #Reactive
