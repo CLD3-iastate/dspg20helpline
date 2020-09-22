@@ -174,7 +174,7 @@ body <- dashboardBody(
                 status = "warning",
                 solidHeader = TRUE,
                 collapsible = TRUE,
-                h1("2020 DSPG Hotline"),
+                # h1("2020 DSPG Hotline"),
                 
                 h2("Project Description"),
                 p("The Hotline system enables the citizens of Iowa to make direct contact with scientific and educational support. We have created an analytic strategy that maximizes the actionable insights yielded from the hotline data."),
@@ -578,9 +578,11 @@ body <- dashboardBody(
 #---------------------------------------------------------------------------#
 
 ui <- dashboardPage(
-  dashboardHeader(title = "Hotline Shiny App"),
+  dashboardHeaderPlus(
+    title = "Hotline Shiny App",
+    left_menu = tagList(div(toupper("Expand the Iowa State University Extension Community Helpline Services Across the State"), style="height:35px; display:flex; align-items: center;"))),
   sidebar = sidebar,
-  body = body
+  body = body 
 ) 
 
 
