@@ -7,9 +7,25 @@ packages <- c("dplyr", "purrr", "readr", "stringr", "readr", "readxl",
 for (pkgs in packages){
   if(!require(pkgs, character.only = TRUE)){ # Condition 
     install.packages(pkgs) # Install if not
-    library(pkgs) # Load if installed
   }
 }
+
+library(dplyr)
+library(purrr)
+library(readr)
+library(stringr)
+library(readr)
+library(readxl)
+library(magrittr)
+library(stringr)
+library(ggplot2)
+library(shiny)
+library(sentimentr)
+library(shinythemes)
+library(shinydashboard)
+library(shinydashboardPlus) # Uses version 0.7.5
+library(plotly)
+
 
 #-----------------------------------------------------------------------------------------#
 

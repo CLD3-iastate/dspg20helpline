@@ -2,43 +2,6 @@
 
 
 
-#packages <- c("dplyr", "purrr", "stringr", "readxl",
-#             "magrittr", "stringr")
-
-#for (pkgs in packages){
-# if(!require(pkgs, character.only = TRUE)){ # Condition 
-#  install.packages(pkgs) # Install if not in set 1
-# library(pkgs) # Load if installed
-#}
-#}
-
-
-
-
-
-#packages_2 <- c("ggplot2", "shiny", "sentimentr",
-#                "shinythemes", "shinydashboard", "shinydashboardPlus", "plotly")
-
-#for (pkgs2 in packages_2){
-#  if(!require(pkgs2, character.only = TRUE)){ # Condition 
-#    install.packages(pkgs2) # Install if not in set 2
-#    library(pkgs2) # Load if installed
-#  }
-#}
-
-
-#packages_3 <- c("tidyverse", "lubridate", "hrbrthemes", "viridis", "viridisLite",
-#               "rayshader", "magick")
-
-#for (pkgs3 in packages_3){
-#  if(!require(pkgs3, character.only = TRUE)){ # Condition 
-#    install.packages(pkgs3) # Install if not in set 3
-#    library(pkgs3) # Load if installed
-#  }
-#}
-
-
-
 library(shinyjs)
 library(dplyr)
 library(purrr)

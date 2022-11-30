@@ -1,0 +1,14 @@
+name: dspg20helpline
+title: dspg20helpline
+username:
+account: publicsciencecollaborative
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 7775506
+bundleId: 6573822
+url: https://publicsciencecollaborative.shinyapps.io/dspg20helpline/
+when: 1669834992.80877
+lastSyncTime: 1669834992.80877
+asMultiple: FALSE
+asStatic: FALSE
+ignoredFiles: data_cleaning_manipulation.Rmd|Hotline_App.R|Hotline_App_V2.R|Hotline_App_V3.R|Hotline_App_V4.R|Hotline_App_V7.R|Hotline_App_V8.R|Hotline_App_V9.R
